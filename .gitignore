@@ -1,0 +1,55 @@
+# =====================
+# Virtual Environments
+# =====================
+venv/
+env/
+ENV/
+
+# =====================
+# Python
+# =====================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =====================
+# Django
+# =====================
+*.log
+local_settings.py
+media/
+staticfiles/
+
+# =====================
+# Database files (IMPORTANT)
+# =====================
+db.sqlite3
+*.sqlite3
+*.db
+*.sqlite
+
+# MySQL / PostgreSQL dumps
+*.sql
+
+# =====================
+# Environment variables
+# =====================
+.env
+.env.*
+
+# =====================
+# IDEs & Editors
+# =====================
+.vscode/
+.idea/
+
+# =====================
+# OS files
+# =====================
+.DS_Store
+Thumbs.db
+
+# =====================
+# Migrations cache
+# =====================
+**/migrations/__pycache__/
