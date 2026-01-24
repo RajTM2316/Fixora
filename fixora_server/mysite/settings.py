@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 ]
 extrnal_apps = [
     'manage_users',
+    'manage_service'
 ]
 INSTALLED_APPS += extrnal_apps
 MIDDLEWARE = [
