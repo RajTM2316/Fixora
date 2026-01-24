@@ -18,9 +18,25 @@ class Profile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    phone = models.CharField(max_length=15)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+
+    # ⬇️ MAKE THESE SAFE FOR SIGNAL
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        blank=True
+    )
+
+    phone = models.CharField(
+        max_length=15,
+        blank=True
+    )
+
+    address = models.ForeignKey(
+        Address,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.user.username
