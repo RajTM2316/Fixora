@@ -37,13 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'manage_service',
-
-]
-EXTERNAL_APPS = [
+    # fixora apps
     'manage_user',
+    'manage_service',
 ]
-INSTALLED_APPS = EXTERNAL_APPS + INSTALLED_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
