@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # fixora apps
     'manage_user',
     'manage_service',
+    'payments',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
