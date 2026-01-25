@@ -1,3 +1,4 @@
-from django.shortcuts import render
+from django.http import HttpResponse
 
-# Create your views here.
+def payment_placeholder(request):
+    return HttpResponse("Hello, this is the payments app placeholder view.")
