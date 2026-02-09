@@ -2,7 +2,6 @@
 {% block title %}Fixora | Login{% endblock %}
 
 {% block content %}
-<!-- Toogle button remaining -->
 <div class="bg-brand-surface min-h-screen flex items-center justify-center p-4">
 
     <div class="bg-white w-full max-w-md rounded-[32px] shadow-2xl shadow-brand-primary/10 overflow-hidden relative">
@@ -24,12 +23,33 @@
             <form method="POST" class="space-y-5">
                 {% csrf_token %}
 
+                <!-- User Type Toggle -->
+                <div class="flex gap-2 mb-2">
+                    <button type="button"
+                        onclick="selectLoginType('customer')"
+                        id="customerLoginBtn"
+                        class="flex-1 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-action to-brand-primary text-white shadow-md">
+                        Customer
+                    </button>
+
+                    <button type="button"
+                        onclick="selectLoginType('provider')"
+                        id="providerLoginBtn"
+                        class="flex-1 py-2 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">
+                        Provider
+                    </button>
+                </div>
+
+                <!-- Hidden role field -->
+                <input type="hidden" name="role" id="roleInput" value="customer">
+
                 <!-- Username -->
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                         Username
                     </label>
-                    <input type="text" name="username" required class="w-full rounded-xl p-4 font-semibold border"
+                    <input type="text" name="username" required
+                        class="w-full rounded-xl p-4 font-semibold border"
                         placeholder="Enter your username">
                 </div>
 
@@ -38,7 +58,8 @@
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                         Password
                     </label>
-                    <input type="password" name="password" required class="w-full rounded-xl p-4 font-semibold border"
+                    <input type="password" name="password" required
+                        class="w-full rounded-xl p-4 font-semibold border"
                         placeholder="Enter your password">
                 </div>
 
@@ -68,10 +89,27 @@
         </div>
     </div>
 </div>
-{% if messages %}
-{% for message in messages %}
-<p style="color:green">{{ message }}</p>
-{% endfor %}
-{% endif %}
+
+<!-- Toggle Script -->
+<script>
+function selectLoginType(type) {
+    document.getElementById('roleInput').value = type;
+
+    const customerBtn = document.getElementById('customerLoginBtn');
+    const providerBtn = document.getElementById('providerLoginBtn');
+
+    if (type === 'customer') {
+        customerBtn.className =
+            'flex-1 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-action to-brand-primary text-white shadow-md';
+        providerBtn.className =
+            'flex-1 py-2 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200';
+    } else {
+        providerBtn.className =
+            'flex-1 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-action to-brand-primary text-white shadow-md';
+        customerBtn.className =
+            'flex-1 py-2 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200';
+    }
+}
+</script>
 
 {% endblock %}

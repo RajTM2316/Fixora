@@ -19,7 +19,7 @@ class Profile(models.Model):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    # ✅ MUST HAVE DEFAULT (Fixes IntegrityError)
+    # MUST HAVE DEFAULT (Fixes IntegrityError)
     role = models.CharField(
         max_length=20,
         choices=ROLE_CHOICES,

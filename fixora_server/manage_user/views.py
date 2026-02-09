@@ -9,22 +9,26 @@ def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
+        role = request.POST.get("role")  # role from toggle
 
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            login(request, user)
+            # Check if profile exists and role matches
+            if hasattr(user, "profile") and user.profile.role == role:
+                login(request, user)
 
-            # redirect based on role
-            if hasattr(user, "profile") and user.profile.role == "provider":
-                return redirect("/provider-dashboard/")
+                # redirect based on role
+                if role == "provider":
+                    return redirect("/provider-dashboard/")
+                else:
+                    return redirect("/")  # customer home
             else:
-                return redirect("/")  # customer home
+                messages.error(request, "Incorrect role selected.")
         else:
             messages.error(request, "Invalid username or password")
 
     return render(request, "manage_user/login.html")
-
 
 from django.http import HttpResponse
 
