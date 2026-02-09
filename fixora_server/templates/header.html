@@ -1,0 +1,20 @@
+<!-- Navbar -->
+<header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <a href="/" class="text-2xl font-extrabold text-brand-dark tracking-tight">
+            Fixora<span class="text-brand-primary">.</span>
+        </a>
+
+        <nav class="space-x-6 text-sm font-semibold text-gray-600">
+            <a href="/" class="hover:text-brand-primary">Home</a>
+            <a href="/services/" class="hover:text-brand-primary">Services</a>
+
+            {% if user.is_authenticated %}
+                <a href="/bookings/" class="hover:text-brand-primary">Bookings</a>
+                <a href="/logout/" class="text-red-500 hover:text-red-600">Logout</a>
+            {% else %}
+                <a href="/manage_user/" class="text-brand-primary hover:underline">Login</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
