@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sign Up</title>
+</head>
+
+<body>
+
+    <h2>User Registration</h2>
+
+    <form method="POST" action="{% url 'signup' %}" name="signup">
+        <!-- Django CSRF token (required in templates) -->
+        {% csrf_token %}
+
+        <!-- User model fields -->
+        <label>Username:</label><br>
+        <input type="text" name="username" required><br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>Password:</label><br>
+        <input type="password" name="password" required><br><br>
+
+        <!-- Profile fields -->
+        <label>Role:</label><br>
+        <select name="role">
+            <option value="customer">Customer</option>
+            <option value="provider">Service Provider</option>
+        </select><br><br>
+
+        <label>Phone:</label><br>
+        <input type="text" name="phone"><br><br>
+
+        <!-- Address fields -->
+        <h3>Address</h3>
+
+        <label>Street:</label><br>
+        <input type="text" name="street"><br><br>
+
+        <label>City:</label><br>
+        <input type="text" name="city"><br><br>
+
+        <label>Pincode:</label><br>
+        <input type="text" name="pincode"><br><br>
+
+        <button type="submit">Sign Up</button>
+    </form>
+
+</body>
+
+</html>

@@ -16,7 +16,7 @@ class Profile(models.Model):
         ("customer", "Customer"),
         ("provider", "Service Provider"),
     ]
-
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # ✅ MUST HAVE DEFAULT (Fixes IntegrityError)
