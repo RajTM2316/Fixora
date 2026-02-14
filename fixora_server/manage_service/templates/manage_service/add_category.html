@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Service Category | Fixora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl">
+
+        <h2 class="text-2xl font-bold text-center text-indigo-600 mb-6">
+            Add New Service Category
+        </h2>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Category Name -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Category Name
+                </label>
+                <input type="text" name="name" placeholder="e.g. Plumbing"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                    required>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Description
+                </label>
+                <textarea name="description" rows="4" placeholder="Short description about this service category..."
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"></textarea>
+            </div>
+
+            <!-- Icon or Image -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Category Image
+                </label>
+                <input type="file" name="image"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+            </div>
+
+            <!-- Active Status -->
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" name="is_active" value="True"
+                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                <label class="text-sm text-gray-700">
+                    Mark as Active
+                </label>
+            </div>
+
+            <!-- Submit Button -->
+            <div>
+                <button type="submit"
+                    class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-semibold">
+                    Add Category
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>
