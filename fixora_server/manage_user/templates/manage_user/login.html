@@ -10,7 +10,7 @@
         <div
             class="h-64 bg-gradient-to-br from-brand-primary via-brand-action to-brand-accent relative p-8 flex flex-col justify-center overflow-hidden">
             <h1 class="text-4xl font-extrabold text-white tracking-tight relative z-10">
-                Fixora.
+                Fixora
             </h1>
             <p class="text-blue-50 mt-2 relative z-10 font-medium">
                 Professional Home Services
@@ -25,16 +25,12 @@
 
                 <!-- User Type Toggle -->
                 <div class="flex gap-2 mb-2">
-                    <button type="button"
-                        onclick="selectLoginType('customer')"
-                        id="customerLoginBtn"
+                    <button type="button" onclick="selectLoginType('customer')" id="customerLoginBtn"
                         class="flex-1 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-action to-brand-primary text-white shadow-md">
                         Customer
                     </button>
 
-                    <button type="button"
-                        onclick="selectLoginType('provider')"
-                        id="providerLoginBtn"
+                    <button type="button" onclick="selectLoginType('provider')" id="providerLoginBtn"
                         class="flex-1 py-2 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200">
                         Provider
                     </button>
@@ -48,8 +44,7 @@
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                         Username
                     </label>
-                    <input type="text" name="username" required
-                        class="w-full rounded-xl p-4 font-semibold border"
+                    <input type="text" name="username" required class="w-full rounded-xl p-4 font-semibold border"
                         placeholder="Enter your username">
                 </div>
 
@@ -58,19 +53,27 @@
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                         Password
                     </label>
-                    <input type="password" name="password" required
-                        class="w-full rounded-xl p-4 font-semibold border"
+                    <input type="password" name="password" required class="w-full rounded-xl p-4 font-semibold border"
                         placeholder="Enter your password">
                 </div>
 
                 <!-- Error Messages -->
                 {% if messages %}
                 {% for message in messages %}
-                <div class="p-3 rounded-xl text-sm font-semibold text-center bg-red-50 text-red-600 border">
+                <div class="auto-hide-alert mb-4 p-3 rounded-xl text-sm font-semibold text-center border
+            {% if message.tags == 'success' %}
+                bg-green-50 text-green-600 border-green-200
+            {% elif message.tags == 'error' %}
+                bg-red-50 text-red-600 border-red-200
+            {% endif %}">
                     {{ message }}
                 </div>
                 {% endfor %}
                 {% endif %}
+
+
+
+
 
                 <!-- Submit -->
                 <button type="submit"
@@ -92,24 +95,42 @@
 
 <!-- Toggle Script -->
 <script>
-function selectLoginType(type) {
-    document.getElementById('roleInput').value = type;
+    function selectLoginType(type) {
+        document.getElementById('roleInput').value = type;
 
-    const customerBtn = document.getElementById('customerLoginBtn');
-    const providerBtn = document.getElementById('providerLoginBtn');
+        const customerBtn = document.getElementById('customerLoginBtn');
+        const providerBtn = document.getElementById('providerLoginBtn');
 
-    if (type === 'customer') {
-        customerBtn.className =
-            'flex-1 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-action to-brand-primary text-white shadow-md';
-        providerBtn.className =
-            'flex-1 py-2 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200';
-    } else {
-        providerBtn.className =
-            'flex-1 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-action to-brand-primary text-white shadow-md';
-        customerBtn.className =
-            'flex-1 py-2 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200';
+        if (type === 'customer') {
+            customerBtn.className =
+                'flex-1 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-action to-brand-primary text-white shadow-md';
+            providerBtn.className =
+                'flex-1 py-2 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200';
+        } else {
+            providerBtn.className =
+                'flex-1 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-action to-brand-primary text-white shadow-md';
+            customerBtn.className =
+                'flex-1 py-2 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200';
+        }
     }
-}
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+            const alerts = document.querySelectorAll(".auto-hide-alert");
+
+            alerts.forEach(function (alert) {
+                alert.style.transition = "all 0.5s ease";
+                alert.style.opacity = "0";
+                alert.style.transform = "translateY(-10px)";
+
+                setTimeout(function () {
+                    alert.remove();
+                }, 500);
+            });
+
+        }, 3000);
+    });
 </script>
 
 {% endblock %}
