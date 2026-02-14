@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login , logout
 from django.contrib import messages
 from .models import Profile
 from django.contrib.auth.models import User
@@ -20,9 +20,9 @@ def login_view(request):
 
                 # redirect based on role
                 if role == "provider":
-                    return redirect("/provider-dashboard/")
+                    return redirect("provider_dashboard")
                 else:
-                    return redirect("/")  # customer home
+                    return redirect("customer_home")  # customer home
             else:
                 messages.error(request, "Incorrect role selected.")
         else:
@@ -81,4 +81,6 @@ def signup_view(request):
 
     return render(request, "manage_user/sign_up.html")
 
-
+def logout_view(request):
+    logout(request)
+    return redirect("login")

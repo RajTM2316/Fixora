@@ -28,10 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -123,9 +119,18 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
+# Static files
+STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Auth redirects
+LOGIN_URL = "/manage_user/"
+LOGIN_REDIRECT_URL = "/customer/home/"
+LOGOUT_REDIRECT_URL = "/manage_user/"

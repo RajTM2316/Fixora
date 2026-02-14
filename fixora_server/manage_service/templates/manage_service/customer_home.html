@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Fixora | Expert Services{% endblock %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    brand: { 
+                        dark: '#0f172a', 
+                        primary: '#0066ff', 
+                        action: '#4f46e5',
+                        surface: '#f8fafc'
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .tap-effect:active { transform: scale(0.95); }
+    .card-interactive { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .card-interactive:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+</style>
+
+<body class="bg-brand-surface pb-32">
+
+    <header class="px-6 pt-12 pb-8">
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
+                <i class="fa-solid fa-circle-user text-brand-action"></i>
+                <span class="text-brand-dark font-bold text-sm">Welcome, {{ user.username }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="text-red-500 font-bold text-sm">Logout</a>
+        </div>
+
+        <h1 class="text-4xl font-extrabold text-brand-dark mb-8 leading-tight">
+            Find your <br><span class="text-brand-action">expert</span> today.
+        </h1>
+
+        <form method="GET" action="/services/" class="relative">
+            <i class="fa-solid fa-search absolute left-5 top-5 text-gray-400"></i>
+            <input type="text" name="q" placeholder="Search 'Plumber' or 'AC'..." 
+                class="w-full rounded-[20px] py-4 pl-12 pr-16 bg-white border-none shadow-sm focus:ring-2 focus:ring-brand-action outline-none font-semibold">
+            <button type="submit" class="absolute right-3 top-3 bg-brand-dark text-white p-2 rounded-xl">
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </form>
+    </header>
+
+    <main class="px-6">
+        <div class="flex justify-between items-end mb-6">
+            <h2 class="text-xl font-bold text-brand-dark">Categories</h2>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-10">
+            {% for category in categories %}
+            <a href="/services/?category={{ category.id }}" class="card-interactive bg-white p-6 rounded-[24px] flex flex-col items-center gap-3 text-center">
+                <div class="w-14 h-14 bg-indigo-50 text-brand-action rounded-2xl flex items-center justify-center text-xl">
+                    {% if "Repair" in category.name %}<i class="fa-solid fa-screwdriver-wrench"></i>
+                    {% elif "Clean" in category.name %}<i class="fa-solid fa-broom"></i>
+                    {% else %}<i class="fa-solid fa-bolt"></i>{% endif %}
+                </div>
+                <span class="font-bold text-brand-dark text-sm">{{ category.name }}</span>
+            </a>
+            {% empty %}
+            <p class="text-gray-400 col-span-2 text-center">No categories available.</p>
+            {% endfor %}
+        </div>
+
+        <h2 class="text-xl font-bold text-brand-dark mb-4">Current Status</h2>
+        {% if active_booking %}
+        <div class="bg-white p-5 rounded-[24px] shadow-sm border-l-4 border-brand-action mb-8">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="font-bold text-brand-dark">{{ active_booking.provider_service.service.name }}</h3>
+                    <span class="text-xs font-bold text-brand-action uppercase tracking-widest">{{ active_booking.status }}</span>
+                </div>
+                <i class="fa-solid fa-spinner fa-spin text-brand-action"></i>
+            </div>
+            <div class="flex gap-2">
+                <a href="/track/{{ active_booking.id }}/" class="flex-1 bg-brand-dark text-white text-center py-3 rounded-xl font-bold text-sm tap-effect">Track Pro</a>
+                <a href="/chat/{{ active_booking.id }}/" class="w-12 bg-brand-surface text-brand-dark flex items-center justify-center rounded-xl border border-gray-100 tap-effect">
+                    <i class="fa-solid fa-comment-dots"></i>
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-gray-100 p-8 rounded-[24px] text-center mb-8 border-2 border-dashed border-gray-200">
+            <p class="text-gray-400 font-medium">No active bookings right now</p>
+        </div>
+        {% endif %}
+    </main>
+
+    <div class="fixed bottom-6 left-6 right-6 glass-panel rounded-[24px] p-4 shadow-xl flex justify-around items-center z-50">
+        <a href="/" class="text-brand-action flex flex-col items-center gap-1 relative">
+            <div class="absolute -top-1 -right-1 w-1.5 h-1.5 bg-brand-action rounded-full"></div>
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[10px] font-bold">Home</span>
+        </a>
+        <a href="/customer/bookings/" class="text-gray-400 flex flex-col items-center gap-1">
+            <i class="fa-solid fa-calendar-check text-lg"></i>
+            <span class="text-[10px] font-bold">History</span>
+        </a>
+        <a href="/profile/" class="text-gray-400 flex flex-col items-center gap-1">
+            <i class="fa-solid fa-user-gear text-lg"></i>
+            <span class="text-[10px] font-bold">Profile</span>
+        </a>
+    </div>
+
+</body>
+{% endblock %}
