@@ -39,7 +39,7 @@ def signup_view(request):
         password = request.POST.get("password")
         
         role = request.POST.get("role")
-        profile_image = request.FILES.get("profile_image")
+        profile_picture = request.FILES.get("profile_picture")
         phone = request.POST.get("phone")
 
         street = request.POST.get("street")
@@ -64,7 +64,7 @@ def signup_view(request):
             user=user,
             role=role,
             phone=phone,
-            profile_image=profile_image 
+            profile_picture=profile_picture
         )
 
         if street or city or pincode:
