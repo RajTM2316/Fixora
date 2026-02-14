@@ -26,6 +26,7 @@ class Profile(models.Model):
         default="customer"
     )
 
+    profile_picture = models.ImageField(upload_to="profile_pictures/",default="profile_images/default.png", null=True, blank=True)
     phone = models.CharField(
         max_length=15,
         null=True,
