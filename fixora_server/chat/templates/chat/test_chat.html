@@ -1,0 +1,35 @@
+<h2>Test Chat</h2>
+
+<input id="room-name" placeholder="Room name">
+<button onclick="joinRoom()">Join</button>
+
+<div id="chat-box" style="margin-top:20px;"></div>
+
+<input id="message-input" placeholder="Type message">
+<button onclick="sendMessage()">Send</button>
+
+<script>
+let socket;
+
+function joinRoom() {
+    const roomName = document.getElementById("room-name").value;
+
+    socket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+    );
+
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        document.getElementById("chat-box").innerHTML +=
+            "<p><b>" + data.sender + ":</b> " + data.message + "</p>";
+    };
+}
+
+function sendMessage() {
+    const message = document.getElementById("message-input").value;
+    socket.send(JSON.stringify({
+        'message': message
+    }));
+    document.getElementById("message-input").value = "";
+}
+</script>

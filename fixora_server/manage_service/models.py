@@ -59,3 +59,13 @@ class ServiceRequestImage(models.Model):
 
     def __str__(self):
         return f"Image for Request {self.request.id}"
+    
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from chat.models import Conversation
+
+
+@receiver(post_save, sender=ServiceRequest)
+def create_conversation(sender, instance, created, **kwargs):
+    if created:
+        Conversation.objects.create(service_request=instance)

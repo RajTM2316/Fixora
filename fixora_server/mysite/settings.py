@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'manage_user',
     'manage_service',
     'payments',
+    'channels',
+    'chat',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -70,7 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
-
+ASGI_APPLICATION = 'mysite.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -85,7 +87,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
 
 
 # Password validation
@@ -134,3 +135,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = "/manage_user/"
 LOGIN_REDIRECT_URL = "/customer/home/"
 LOGOUT_REDIRECT_URL = "/manage_user/"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
