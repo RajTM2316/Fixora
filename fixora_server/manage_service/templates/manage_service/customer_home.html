@@ -156,6 +156,7 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"   // ✅ Important if CSRF enabled
                 },
                 body: JSON.stringify({
                     latitude: position.coords.latitude,
@@ -165,7 +166,10 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === "success") {
-                        alert("Location saved successfully!");
+
+                        // ✅ Redirect to location map page
+                        window.location.href = "/manage_service/location-map/";
+
                     } else {
                         alert("Error saving location.");
                     }
