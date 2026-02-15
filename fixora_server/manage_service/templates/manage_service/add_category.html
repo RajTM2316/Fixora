@@ -1,72 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Service Category | Fixora</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background: linear-gradient(135deg, #f0f4ff 0%, #e2e8f0 100%);
+        }
+        
+        .bg-grid-pattern {
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.5;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        .animate-enter {
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .file-drop-zone {
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%234F46E5FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+        .file-drop-zone:hover {
+            background-color: rgba(79, 70, 229, 0.05);
+            transform: scale(1.005);
+        }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #4F46E5;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4F46E5;
+        }
+        
+        .btn-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-shimmer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        .btn-shimmer:hover::after {
+            left: 100%;
+            transition: 0.5s ease-in-out;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="h-screen w-full flex items-center justify-center overflow-hidden relative">
 
-    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl">
+    <div class="absolute inset-0 bg-grid-pattern pointer-events-none z-0"></div>
 
-        <h2 class="text-2xl font-bold text-center text-indigo-600 mb-6">
-            Add New Service Category
-        </h2>
+    <div class="absolute top-10 left-10 w-64 h-64 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+    <div class="absolute bottom-10 right-10 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
 
-        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+    <div class="glass-card rounded-3xl p-10 w-full max-w-xl animate-enter relative z-10 mx-4">
+        
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white mb-4 shadow-lg shadow-indigo-200 transform hover:rotate-6 transition-transform duration-300">
+                <i class="fa-solid fa-layer-group text-xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">
+                Add Service Category
+            </h2>
+            <p class="text-slate-500 text-sm mt-1">Create a new service offering for Fixora.</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-5">
             {% csrf_token %}
 
-            <!-- Category Name -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Category Name
-                </label>
-                <input type="text" name="name" placeholder="e.g. Plumbing"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-                    required>
+            <div class="animate-enter delay-100 group">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Category Name</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-tag text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                    </div>
+                    <input type="text" name="name" placeholder="e.g. Plumbing, Electrical" required
+                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white outline-none transition-all duration-200 text-sm">
+                </div>
             </div>
 
-            <!-- Description -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Description
-                </label>
-                <textarea name="description" rows="4" placeholder="Short description about this service category..."
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none"></textarea>
+            <div class="animate-enter delay-200 group">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Description</label>
+                <div class="relative">
+                    <div class="absolute top-3 left-3 flex items-start pointer-events-none">
+                        <i class="fa-solid fa-align-left text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                    </div>
+                    <textarea name="description" rows="3" placeholder="Briefly describe what this category covers..."
+                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white outline-none transition-all duration-200 resize-none text-sm"></textarea>
+                </div>
             </div>
 
-            <!-- Icon or Image -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Category Image
-                </label>
-                <input type="file" name="image"
-                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+            <div class="animate-enter delay-300">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ml-1">Category Image</label>
+                <div class="file-drop-zone relative w-full h-28 rounded-xl flex flex-col items-center justify-center cursor-pointer bg-slate-50 hover:bg-white transition-colors">
+                    <input type="file" name="image" id="file-upload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="previewFile()">
+                    
+                    <div class="text-center z-10 transition-opacity duration-300" id="upload-placeholder">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-400 mb-1"></i>
+                        <p class="text-xs text-slate-500 font-medium">Click or Drag image here</p>
+                    </div>
+
+                    <img id="image-preview" class="absolute inset-0 w-full h-full object-cover rounded-xl hidden z-10" />
+                </div>
             </div>
 
-            <!-- Active Status -->
-            <div class="flex items-center space-x-3">
-                <input type="checkbox" name="is_active" value="True"
-                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                <label class="text-sm text-gray-700">
-                    Mark as Active
-                </label>
+            <div class="animate-enter delay-300 flex items-center justify-between bg-white border border-slate-100 p-3 rounded-xl shadow-sm">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-emerald-50 p-2 rounded-lg text-emerald-600">
+                        <i class="fa-solid fa-power-off text-sm"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-semibold text-slate-700">Active Status</span>
+                        <span class="text-[10px] text-slate-400">Visible to users immediately</span>
+                    </div>
+                </div>
+                
+                <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="is_active" id="toggle" value="True" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-6 top-0 border-slate-200"/>
+                    <label for="toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-200 cursor-pointer transition-colors duration-300"></label>
+                </div>
             </div>
 
-            <!-- Submit Button -->
-            <div>
+            <div class="animate-enter delay-300 pt-2">
                 <button type="submit"
-                    class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-semibold">
-                    Add Category
+                    class="btn-shimmer w-full bg-indigo-600 text-white py-3.5 rounded-xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-0.5 transition-all duration-300 font-semibold tracking-wide text-sm flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Create Category</span>
                 </button>
             </div>
 
         </form>
-
     </div>
 
-</body>
+    <script>
+        function previewFile() {
+            const preview = document.getElementById('image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+            const file = document.querySelector('input[type=file]').files[0];
+            const reader = new FileReader();
 
+            reader.addEventListener("load", function () {
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('opacity-0');
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        document.getElementById('toggle').addEventListener('change', function() {
+             if(this.checked) {
+                 this.style.right = '0';
+                 this.style.borderColor = '#4F46E5'; 
+             } else {
+                 this.style.right = 'calc(100% - 1.5rem)'; 
+                 this.style.borderColor = '#e2e8f0';
+             }
+        });
+    </script>
+
+</body>
 </html>
