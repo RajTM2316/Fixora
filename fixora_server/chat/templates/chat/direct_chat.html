@@ -142,46 +142,76 @@
 <script>
     const currentUsername = "{{ request.user.username }}";
     const requestId = "{{ service_request.id }}";
-    const socket = new WebSocket((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + "/ws/chat/" + requestId + "/");
+
+    const socket = new WebSocket(
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+        window.location.host +
+        "/ws/chat/" +
+        requestId +
+        "/"
+    );
 
     const statusDiv = document.getElementById("status");
     const chatBox = document.getElementById("chat-box");
     const input = document.getElementById("message-input");
 
-    socket.onopen = () => { statusDiv.innerText = "Online"; statusDiv.classList.add("online"); };
-    socket.onclose = () => { statusDiv.innerText = "Offline"; statusDiv.classList.remove("online"); };
+    socket.onopen = () => {
+        statusDiv.innerText = "Online";
+        statusDiv.classList.add("online");
+    };
+
+    socket.onclose = () => {
+        statusDiv.innerText = "Offline";
+        statusDiv.classList.remove("online");
+    };
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         const isMe = data.sender === currentUsername;
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        
+        const time = new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
         const row = document.createElement("div");
         row.className = message-row ${isMe ? 'row-me' : 'row-other'};
-        
+
         row.innerHTML = `
             <div class="bubble-container ${isMe ? 'me' : 'other'}">
                 ${!isMe ? <span class="sender-label">${data.sender}</span> : ''}
                 <div class="bubble">${data.message}</div>
                 <div class="time-stamp">
-                    ${time} ${isMe ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                    ${time}
+                    ${isMe ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
                 </div>
             </div>
         `;
-        
+
         chatBox.appendChild(row);
-        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+        chatBox.scrollTo({
+            top: chatBox.scrollHeight,
+            behavior: 'smooth'
+        });
     };
 
     function sendMessage() {
         const message = input.value.trim();
         if (!message) return;
-        socket.send(JSON.stringify({ 'message': message }));
+
+        socket.send(JSON.stringify({
+            message: message
+        }));
+
         input.value = "";
     }
 
-    input.onkeypress = (e) => { if (e.key === "Enter") sendMessage(); };
+    input.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            sendMessage();
+        }
+    });
 </script>
+
 
 </body>
 </html>
