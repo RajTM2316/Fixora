@@ -1,111 +1,186 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Service Chat</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Service Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent-primary: #818cf8;
+            --accent-secondary: #2dd4bf;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --me-bubble: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --other-bubble: rgba(255, 255, 255, 0.08);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(45, 212, 191, 0.15) 0px, transparent 50%);
+            height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center;
+            color: var(--text-main); overflow: hidden;
         }
 
-        #chat-box {
-            border: 1px solid #ccc;
-            height: 400px;
-            overflow-y: auto;
-            padding: 10px;
-            margin-bottom: 15px;
+        .chat-container {
+            width: 95%; max-width: 600px; height: 85vh;
+            background: var(--card-bg); backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 28px;
+            display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .message {
-            margin-bottom: 10px;
+        .chat-header {
+            padding: 20px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .me {
-            color: blue;
-        }
-
-        .other {
-            color: green;
+        .chat-header h2 {
+            margin: 0; font-size: 1.1rem; font-weight: 700;
+            background: linear-gradient(to right, #fff, var(--text-dim));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
         #status {
-            margin-bottom: 10px;
-            font-weight: bold;
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            padding: 6px 14px; border-radius: 20px; background: rgba(0,0,0,0.2);
+            color: #ef4444; display: flex; align-items: center; gap: 8px; transition: 0.3s;
+        }
+
+        #status::before { content: ''; width: 8px; height: 8px; background: currentColor; border-radius: 50%; }
+        .online { color: var(--accent-secondary) !important; background: rgba(45, 212, 191, 0.1) !important; }
+
+        #chat-box {
+            flex: 1; overflow-y: auto; padding: 24px;
+            display: flex; flex-direction: column; gap: 20px; scrollbar-width: none;
+        }
+
+        #chat-box::-webkit-scrollbar { display: none; }
+
+        .message-row { display: flex; width: 100%; margin-bottom: 4px; }
+        .row-me { justify-content: flex-end; }
+        .row-other { justify-content: flex-start; }
+
+        .bubble-container { max-width: 75%; display: flex; flex-direction: column; }
+        .row-me .bubble-container { align-items: flex-end; }
+        .row-other .bubble-container { align-items: flex-start; }
+
+        .bubble {
+            padding: 12px 18px; font-size: 0.95rem; line-height: 1.5;
+            position: relative; animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .me .bubble {
+            background: var(--me-bubble); color: white;
+            border-radius: 20px 20px 4px 20px;
+            box-shadow: 0 8px 15px -3px rgba(99, 102, 241, 0.3);
+        }
+
+        .other .bubble {
+            background: var(--other-bubble); color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px 20px 20px 4px;
+        }
+
+        .time-stamp {
+            font-size: 0.65rem; color: var(--text-dim); margin-top: 5px; font-weight: 500;
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        .sender-label { font-size: 0.7rem; color: var(--accent-secondary); margin-bottom: 5px; font-weight: 600; }
+
+        @keyframes pop { from { opacity: 0; transform: scale(0.85) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        /* INPUT AREA */
+        .input-area {
+            padding: 18px 24px; background: rgba(15, 23, 42, 0.5);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; gap: 12px; align-items: center;
+        }
+
+        .btn {
+            width: 46px; height: 46px; border-radius: 14px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; border: none; transition: 0.2s;
+        }
+
+        .attach-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+        .send-btn { background: var(--accent-primary); color: white; }
+        .send-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(129, 140, 248, 0.4); }
+
+        #message-input {
+            flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 18px; border-radius: 14px; color: white; outline: none; font-family: inherit;
         }
     </style>
 </head>
 <body>
 
-<h2>
-Chat for Request #{{ service_request.id }}
-</h2>
+<div class="chat-container">
+    <div class="chat-header">
+        <h2>Request #{{ service_request.id }}</h2>
+        <div id="status">Offline</div>
+    </div>
 
-<div id="status">Connecting...</div>
+    <div id="chat-box"></div>
 
-<div id="chat-box"></div>
-
-<input id="message-input" type="text" placeholder="Type message..." style="width:80%;">
-<button onclick="sendMessage()">Send</button>
+    <div class="input-area">
+        <input type="file" id="file-input" style="display:none">
+        <button class="btn attach-btn" onclick="document.getElementById('file-input').click()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+        <input id="message-input" type="text" placeholder="Message..." autocomplete="off">
+        <button class="btn send-btn" onclick="sendMessage()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+    </div>
+</div>
 
 <script>
-const currentUsername = "{{ request.user.username }}";
-const requestId = "{{ service_request.id }}";
+    const currentUsername = "{{ request.user.username }}";
+    const requestId = "{{ service_request.id }}";
+    const socket = new WebSocket((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + "/ws/chat/" + requestId + "/");
 
-const socket = new WebSocket(
-    "ws://" + window.location.host + "/ws/chat/" + requestId + "/"
-);
+    const statusDiv = document.getElementById("status");
+    const chatBox = document.getElementById("chat-box");
+    const input = document.getElementById("message-input");
 
-const statusDiv = document.getElementById("status");
-const chatBox = document.getElementById("chat-box");
-const input = document.getElementById("message-input");
+    socket.onopen = () => { statusDiv.innerText = "Online"; statusDiv.classList.add("online"); };
+    socket.onclose = () => { statusDiv.innerText = "Offline"; statusDiv.classList.remove("online"); };
 
-socket.onopen = function() {
-    statusDiv.innerText = "Connected";
-};
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const isMe = data.sender === currentUsername;
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        const row = document.createElement("div");
+        row.className = message-row ${isMe ? 'row-me' : 'row-other'};
+        
+        row.innerHTML = `
+            <div class="bubble-container ${isMe ? 'me' : 'other'}">
+                ${!isMe ? <span class="sender-label">${data.sender}</span> : ''}
+                <div class="bubble">${data.message}</div>
+                <div class="time-stamp">
+                    ${time} ${isMe ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                </div>
+            </div>
+        `;
+        
+        chatBox.appendChild(row);
+        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+    };
 
-socket.onclose = function() {
-    statusDiv.innerText = "Disconnected";
-};
-
-socket.onerror = function(error) {
-    statusDiv.innerText = "WebSocket Error";
-    console.error("WebSocket error:", error);
-};
-
-socket.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-
-    const messageDiv = document.createElement("div");
-    messageDiv.classList.add("message");
-
-    if (data.sender === currentUsername) {
-        messageDiv.classList.add("me");
-        messageDiv.innerHTML = "<b>You:</b> " + data.message;
-    } else {
-        messageDiv.classList.add("other");
-        messageDiv.innerHTML = "<b>" + data.sender + ":</b> " + data.message;
+    function sendMessage() {
+        const message = input.value.trim();
+        if (!message) return;
+        socket.send(JSON.stringify({ 'message': message }));
+        input.value = "";
     }
 
-    chatBox.appendChild(messageDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-};
-
-function sendMessage() {
-    const message = input.value.trim();
-    if (!message) return;
-
-    socket.send(JSON.stringify({
-        message: message
-    }));
-
-    input.value = "";
-}
-
-input.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        sendMessage();
-    }
-});
+    input.onkeypress = (e) => { if (e.key === "Enter") sendMessage(); };
 </script>
 
 </body>
