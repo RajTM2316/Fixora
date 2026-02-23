@@ -5,9 +5,44 @@ from .models import Category
 from django.contrib import messages
 from manage_user.views import save_location
 from manage_user.models import Profile
+from manage_service.models import ProviderService
 @login_required
 def provider_dashboard(request):
-    return render(request, "manage_service/provider_dashboard.html")
+    profile = Profile.objects.get(user=request.user)
+
+    provider_services = ProviderService.objects.filter(provider=profile)
+
+    # keep your existing logic for these if already defined
+    incoming_requests = []
+    active_job = None
+    job_history = []
+    # Hard coded values for now
+    return render(request, "manage_service/provider_dashboard.html", {
+        "profile": profile,
+        "provider_services": provider_services,
+        "incoming_requests": incoming_requests,
+        "active_job": active_job,
+        "job_history": job_history,
+    })
+
+@login_required
+def toggle_service_availability(request, service_id):
+    if request.method == "POST":
+        profile = Profile.objects.get(user=request.user)
+
+        try:
+            provider_service = ProviderService.objects.get(
+                id=service_id,
+                provider=profile
+            )
+        except ProviderService.DoesNotExist:
+            return redirect("provider_dashboard")
+
+        provider_service.is_available = bool(request.POST.get("is_available"))
+        provider_service.save()
+
+    return redirect("provider_dashboard")
+    
 def customer_home(request):
     categories = Category.objects.filter(is_active=True)
     return render(request, "manage_service/customer_home.html", {

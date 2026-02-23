@@ -60,33 +60,48 @@
             </a>
         </div>
 
-        <form method="POST" action="/provider/toggle-availability/">
-            {% csrf_token %}
-            <div class="bg-brand-dark p-5 rounded-[20px] flex justify-between items-center text-white relative overflow-hidden">
-                <div class="z-10">
-                    <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Current Status</p>
-                    <h3 class="text-2xl font-bold flex items-center gap-2">
-                        {% if profile.is_available %}
-                        <i class="fa-solid fa-circle text-brand-success text-xs"></i> Online
-                        {% else %}
-                        <i class="fa-solid fa-circle text-gray-500 text-xs"></i> Offline
-                        {% endif %}
-                    </h3>
-                </div>
-                
-                <label class="relative inline-flex items-center cursor-pointer z-10">
-                    <input type="checkbox" name="is_available" value="True" class="sr-only peer" 
-                           onchange="this.form.submit()" {% if profile.is_available %}checked{% endif %}>
-                    <div class="w-14 h-7 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-brand-success"></div>
-                </label>
-                
-                <i class="fa-solid fa-signal absolute -right-2 -bottom-4 text-6xl text-white opacity-5"></i>
-            </div>
-        </form>
     </header>
 
     <main class="px-6 space-y-8">
+        <section>
+            <h2 class="text-lg font-bold text-brand-dark mb-4">Service Availability</h2>
         
+            {% for ps in provider_services %}
+            <form method="POST" action="{% url 'toggle_service_availability' ps.id %}">
+                {% csrf_token %}
+                <div class="bg-brand-dark p-5 rounded-[20px] flex justify-between items-center text-white mb-4">
+        
+                    <div>
+                        <p class="text-gray-400 text-xs uppercase">
+                            {{ ps.service.name }}
+                        </p>
+                        <h3 class="text-xl font-bold">
+                            {% if ps.is_available %}
+                                <i class="fa-solid fa-circle text-brand-success text-xs"></i> Available
+                            {% else %}
+                                <i class="fa-solid fa-circle text-gray-500 text-xs"></i> Unavailable
+                            {% endif %}
+                        </h3>
+                    </div>
+        
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox"
+                               name="is_available"
+                               class="sr-only peer"
+                               onchange="this.form.submit()"
+                               {% if ps.is_available %}checked{% endif %}>
+                        <div class="w-14 h-7 bg-gray-600 rounded-full peer-checked:bg-brand-success
+                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                    after:bg-white after:rounded-full after:h-6 after:w-6
+                                    after:transition-all peer-checked:after:translate-x-full">
+                        </div>
+                    </label>
+                </div>
+            </form>
+            {% empty %}
+                <p class="text-gray-400">No services added yet.</p>
+            {% endfor %}
+        </section>
         <section>
             <div class="flex justify-between items-end mb-4">
                 <h2 class="text-lg font-bold text-brand-dark">New Requests</h2>

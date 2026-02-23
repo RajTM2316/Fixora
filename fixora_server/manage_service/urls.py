@@ -9,4 +9,9 @@ urlpatterns = [
     path("add_category/", views.add_category, name="add_category"),
     path('api/save-location/', save_location, name='save_location'),
     path('location-map/', views.location_map, name='location_map'),
+    path(
+    "provider/toggle-service/<int:service_id>/",
+    views.toggle_service_availability,
+    name="toggle_service_availability"
+),
 ]
