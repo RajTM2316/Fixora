@@ -83,6 +83,7 @@
 
                 <a href="/profile/"
                     class="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 bg-white hover:shadow-md transition-all tap-effect">
+
                     {% if request.user.is_authenticated %}
 
                     {% if request.user.profile.profile_picture %}
@@ -100,8 +101,15 @@
 
                     <div class="hidden sm:flex flex-col">
                         <span class="text-[10px] text-gray-400 font-semibold uppercase leading-none">Hello</span>
-                        <span class="text-xs font-bold text-brand-dark leading-none">{{ request.user.username }}</span>
+                        <span class="text-xs font-bold text-brand-dark leading-none">
+                            {% if request.user.is_authenticated %}
+                            {{ request.user.username }}
+                            {% else %}
+                            Guest
+                            {% endif %}
+                        </span>
                     </div>
+
                 </a>
 
                 <a href="{% url 'logout' %}" class="hidden md:flex text-gray-400 hover:text-red-500 transition-colors"
@@ -125,12 +133,7 @@
                     </p>
                 </div>
 
-                <div class="hidden md:block">
-                    <a href="/services/"
-                        class="inline-flex items-center gap-2 bg-brand-dark text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-action transition-colors shadow-lg shadow-brand-dark/20 tap-effect">
-                        Explore Services <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
+
             </div>
 
             <form method="GET" action="/services/" class="relative max-w-2xl mx-auto md:mx-0 tap-effect">
@@ -217,8 +220,37 @@
                         </p>
 
                         <div class="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
-                            <span class="text-xs font-bold text-gray-400">From <span
-                                    class="text-brand-dark text-sm">$25</span>/hr</span>
+                            <div class="mt-auto pt-4 border-t border-gray-100">
+
+                                <div class="grid grid-cols-2 gap-4 items-center">
+
+                                    <!-- Price -->
+                                    <div>
+                                        <p class="text-xs text-gray-400 font-semibold mb-1">
+                                            Starting From
+                                        </p>
+                                        <p class="text-brand-dark font-bold text-sm">
+                                            ₹{{ category.estimated_price|default:"500.00" }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Time -->
+                                    <div class="text-right">
+                                        <p class="text-xs text-gray-400 font-semibold mb-1">
+                                            Estimated Time
+                                        </p>
+                                        <p class="text-brand-dark font-bold text-sm">
+                                            {% if category.estimated_time %}
+                                            {{ category.estimated_time }}
+                                            {% else %}
+                                            1:00:00
+                                            {% endif %}
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                            </div>
                             <a href="/services/?category={{ category.id }}"
                                 class="bg-brand-surface text-brand-action w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-action hover:text-white transition-colors tap-effect">
                                 <i class="fa-solid fa-plus"></i>

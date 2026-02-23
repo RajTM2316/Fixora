@@ -1,13 +1,14 @@
 from django.db import models
 from manage_user.models import Profile
-
+from datetime import timedelta
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     image = models.ImageField(upload_to="category_images/", default="category_images/default.jpg", null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
-
+    estimated_time = models.DurationField(null=True, blank=True,default=timedelta(hours=1))  # Default to 1 hour
+    estimated_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=500.00) #500 INR
     def __str__(self):
         return self.name
 

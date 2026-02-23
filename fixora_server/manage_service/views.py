@@ -55,11 +55,13 @@ def add_category(request):
         description = request.POST.get("description")
         image = request.FILES.get("image")
         is_active = bool(request.POST.get("is_active"))
+        estimated_time = request.POST.get("estimated_time")
+        estimated_price = request.POST.get("estimated_price")
         if Category.objects.filter(name=name).exists():
             messages.error(request, "Category with this name already exists.")
             return redirect("add_category")
         else:
-            Category.objects.create(name=name, description=description, image=image, is_active=is_active)
+            Category.objects.create(name=name, description=description, image=image, is_active=is_active, estimated_time=estimated_time, estimated_price=estimated_price)
             messages.success(request, "Category added successfully.")
             return redirect("add_category")
     return render(request, "manage_service/add_category.html")
