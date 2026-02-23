@@ -9,7 +9,7 @@ from manage_user.models import Profile
 def provider_dashboard(request):
     return render(request, "manage_service/provider_dashboard.html")
 def customer_home(request):
-    categories = Category.objects.all()
+    categories = Category.objects.filter(is_active=True)
     return render(request, "manage_service/customer_home.html", {
         "categories": categories
     })
@@ -19,7 +19,7 @@ def add_category(request):
         name = request.POST.get("name")
         description = request.POST.get("description")
         image = request.FILES.get("image")
-        is_active = True if request.POST.get("is_active") == "on" else False
+        is_active = bool(request.POST.get("is_active"))
         if Category.objects.filter(name=name).exists():
             messages.error(request, "Category with this name already exists.")
             return redirect("add_category")

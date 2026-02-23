@@ -158,7 +158,9 @@
                 </div>
                 
                 <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
-                    <input type="checkbox" name="is_active" id="toggle" value="True" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-6 top-0 border-slate-200"/>
+                    <input type="checkbox" name="is_active" id="toggle"
+                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-6 top-0 border-slate-200"
+                    checked />
                     <label for="toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-200 cursor-pointer transition-colors duration-300"></label>
                 </div>
             </div>
@@ -192,15 +194,6 @@
             }
         }
         
-        document.getElementById('toggle').addEventListener('change', function() {
-             if(this.checked) {
-                 this.style.right = '0';
-                 this.style.borderColor = '#4F46E5'; 
-             } else {
-                 this.style.right = 'calc(100% - 1.5rem)'; 
-                 this.style.borderColor = '#e2e8f0';
-             }
-        });
     </script>
 
 </body>
