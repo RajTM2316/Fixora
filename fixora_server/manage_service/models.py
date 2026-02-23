@@ -4,7 +4,7 @@ from manage_user.models import Profile
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    image = models.ImageField(upload_to="category_images/", null=True, blank=True)
+    image = models.ImageField(upload_to="category_images/", default="category_images/default.jpg", null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
 

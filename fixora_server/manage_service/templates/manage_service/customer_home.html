@@ -195,15 +195,15 @@
                 {% for category in categories %}
                 <article
                     class="card-interactive bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-xl overflow-hidden flex flex-col h-full relative group">
-                    <div
-                        class="h-32 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center group-hover:from-indigo-50 group-hover:to-blue-50 transition-colors">
-                        <div
-                            class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl text-brand-action shadow-sm">
-                            {% if "Repair" in category.name %}<i class="fa-solid fa-screwdriver-wrench"></i>
-                            {% elif "Clean" in category.name %}<i class="fa-solid fa-broom"></i>
-                            {% elif "Paint" in category.name %}<i class="fa-solid fa-paint-roller"></i>
-                            {% else %}<i class="fa-solid fa-bolt"></i>{% endif %}
-                        </div>
+                    <div class="h-40 overflow-hidden rounded-t-[24px]">
+                        {% if category.image %}
+                        <img src="{{ category.image.url }}"
+                            class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                            alt="{{ category.name }}">
+                        {% else %}
+                        <img src="/media/category_images/default.jpg" class="w-full h-full object-cover"
+                            alt="Default Category">
+                        {% endif %}
                     </div>
 
                     <div class="p-5 flex flex-col flex-grow">
