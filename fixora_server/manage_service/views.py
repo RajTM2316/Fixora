@@ -6,6 +6,7 @@ from django.contrib import messages
 from manage_user.views import save_location
 from manage_user.models import Profile
 from manage_service.models import ProviderService
+from .models import ServiceRequest
 @login_required
 def provider_dashboard(request):
     profile = Profile.objects.get(user=request.user)
@@ -72,4 +73,19 @@ def location_map(request):
     return render(request, "manage_service/location_map.html", {
         "latitude": profile.latitude,
         "longitude": profile.longitude
+    })
+
+@login_required
+def my_bookings(request):
+    profile = Profile.objects.get(user=request.user)
+
+    bookings = ServiceRequest.objects.filter(
+        customer=profile
+    ).select_related(
+        "provider_service__service__category",
+        "provider_service__provider"
+    ).order_by("-request_date")
+
+    return render(request, "manage_service/my_bookings.html", {
+        "bookings": bookings
     })

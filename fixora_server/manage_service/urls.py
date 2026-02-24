@@ -14,4 +14,6 @@ urlpatterns = [
     views.toggle_service_availability,
     name="toggle_service_availability"
 ),
+path("my-bookings/", views.my_bookings, name="my_bookings"),
+
 ]
