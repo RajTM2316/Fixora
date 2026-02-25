@@ -7,7 +7,11 @@ from .models import Address
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+
 import json
+
+@never_cache
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -81,7 +85,7 @@ def signup_view(request):
         return redirect("login")
 
     return render(request, "manage_user/sign_up.html")
-
+@never_cache
 def logout_view(request):
     logout(request)
     return redirect("login")
