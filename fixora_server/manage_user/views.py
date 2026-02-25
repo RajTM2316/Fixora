@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from .models import Address
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 import json
 def login_view(request):
     if request.method == "POST":
@@ -31,8 +32,6 @@ def login_view(request):
             messages.error(request, "Invalid username or password")
 
     return render(request, "manage_user/login.html")
-
-from django.http import HttpResponse
 
 def signup_view(request):
     if request.method == "POST":
@@ -88,6 +87,7 @@ def logout_view(request):
     return redirect("login")
 
 @csrf_exempt
+@login_required
 def save_location(request):
     if request.method == "POST":
         data = json.loads(request.body)

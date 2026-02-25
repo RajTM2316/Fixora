@@ -7,6 +7,7 @@ from manage_user.views import save_location
 from manage_user.models import Profile
 from manage_service.models import ProviderService
 from .models import ServiceRequest
+
 @login_required
 def provider_dashboard(request):
     profile = Profile.objects.get(user=request.user)
@@ -43,13 +44,15 @@ def toggle_service_availability(request, service_id):
         provider_service.save()
 
     return redirect("provider_dashboard")
-    
+
+@login_required
 def customer_home(request):
     categories = Category.objects.filter(is_active=True)
     return render(request, "manage_service/customer_home.html", {
         "categories": categories
     })
 
+@login_required
 def add_category(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -67,6 +70,7 @@ def add_category(request):
             return redirect("add_category")
     return render(request, "manage_service/add_category.html")
 
+@login_required
 def location_map(request):
     profile = Profile.objects.get(user=request.user)
 
