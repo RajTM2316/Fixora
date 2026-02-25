@@ -1,5 +1,4 @@
 from django.db import models
-from manage_user.models import Profile
 from datetime import timedelta
 
 class Category(models.Model):
@@ -24,7 +23,7 @@ class Service(models.Model):
 
 
 class ProviderService(models.Model):
-    provider = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    provider = models.ForeignKey("manage_user.Profile", on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     is_available = models.BooleanField(default=True)
 
@@ -40,7 +39,7 @@ class ServiceRequest(models.Model):
         ("CANCELLED", "Cancelled"),
     ]
 
-    customer = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="requests")
+    customer = models.ForeignKey("manage_user.Profile", on_delete=models.CASCADE, related_name="requests")
     provider_service = models.ForeignKey(ProviderService, on_delete=models.CASCADE)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")

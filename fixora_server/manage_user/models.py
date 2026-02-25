@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from manage_service.models import Category
 
 
 class Address(models.Model):
@@ -40,6 +41,13 @@ class Profile(models.Model):
         blank=True
     )
 
+    category = models.ForeignKey(
+        "manage_service.Category",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="providers"
+    )
     #For Live-Location Tracking
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)

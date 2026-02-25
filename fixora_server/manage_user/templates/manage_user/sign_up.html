@@ -164,10 +164,18 @@
                 {% csrf_token %}
 
                 <div class="role-toggle">
-                    <button type="button" class="role-btn active" onclick="setRole('customer', this)">Customer</button>
-                    <button type="button" class="role-btn" onclick="setRole('provider', this)">Provider</button>
+                    <button type="button" class="role-btn {% if selected_role != 'provider' %}active{% endif %}"
+                        onclick="setRole('customer', this)">
+                        Customer
+                    </button>
+
+                    <button type="button" class="role-btn {% if selected_role == 'provider' %}active{% endif %}"
+                        onclick="setRole('provider', this)">
+                        Provider
+                    </button>
                 </div>
-                <input type="hidden" name="role" id="role_input" value="customer">
+
+                <input type="hidden" name="role" id="role_input" value="{{ selected_role|default:'customer' }}">
 
                 <div class="section-title">Account Info</div>
                 <div class="row">
@@ -206,6 +214,19 @@
                 <label>Profile Picture</label>
                 <input type="file" name="profile_picture" class="form-control" accept="image/*">
 
+                <div id="category-section" style="display:none;">
+
+                    <div class="section-title">Service Category</div>
+
+                    <label>Select Category</label>
+                    <select name="category" id="category_input" class="form-control">
+                        <option value="">Choose your service</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <button type="submit" class="btn-signup">Register Now</button>
 
                 <div class="footer-text">
@@ -218,11 +239,32 @@
     <script>
         function setRole(role, btn) {
             document.getElementById('role_input').value = role;
+
             const buttons = document.querySelectorAll('.role-btn');
             buttons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+
+            toggleCategory(role);
         }
+
+        function toggleCategory(role) {
+            const section = document.getElementById("category-section");
+
+            if (role === "provider") {
+                section.style.display = "block";
+            } else {
+                section.style.display = "none";
+                document.getElementById("category_input").value = "";
+            }
+        }
+
+        //  (AUTO CHECK ON PAGE LOAD)
+        document.addEventListener("DOMContentLoaded", function () {
+            const role = document.getElementById("role_input").value;
+            toggleCategory(role);
+        });
     </script>
+
 
 </body>
 

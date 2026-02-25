@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-
+from manage_service.models import Category
 import json
 
 @never_cache
@@ -38,6 +38,8 @@ def login_view(request):
     return render(request, "manage_user/login.html")
 
 def signup_view(request):
+    categories = Category.objects.filter(is_active=True)
+    selected_role = request.POST.get("role", "customer")
     if request.method == "POST":
         username = request.POST.get("username")
         email = request.POST.get("email")
@@ -51,6 +53,9 @@ def signup_view(request):
         city = request.POST.get("city")
         pincode = request.POST.get("pincode")
 
+        category_id = request.POST.get("category")
+        category = Category.objects.filter(id=category_id).first() if category_id else None
+
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists")
             return render(request, "manage_user/sign_up.html")
@@ -58,6 +63,12 @@ def signup_view(request):
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email already exists")
             return render(request, "manage_user/sign_up.html")
+
+        if role == "provider" and not category:
+            messages.error(request, "Service providers must select a category.")
+            return render(request, "manage_user/sign_up.html",{
+                "categories": Category.objects.all()
+            })
 
         user = User.objects.create_user(
             username=username,
@@ -69,7 +80,8 @@ def signup_view(request):
             user=user,
             role=role,
             phone=phone,
-            profile_picture=profile_picture
+            profile_picture=profile_picture,
+            category=category
         )
 
         if street or city or pincode:
@@ -84,13 +96,15 @@ def signup_view(request):
         messages.success(request, "Registration successful. Please log in.")
         return redirect("login")
 
-    return render(request, "manage_user/sign_up.html")
+    return render(request, "manage_user/sign_up.html", {
+        "categories": categories,
+        "selected_role": selected_role
+    })
 @never_cache
 def logout_view(request):
     logout(request)
     return redirect("login")
 
-@csrf_exempt
 @login_required
 def save_location(request):
     if request.method == "POST":
