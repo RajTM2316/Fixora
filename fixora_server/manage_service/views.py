@@ -137,3 +137,23 @@ def my_bookings(request):
     return render(request, "manage_service/my_bookings.html", {
         "bookings": bookings
     })
+
+# =========================
+# SERVICE VIEW 
+# ========================= 
+
+from django.shortcuts import render
+
+def service_view(request):
+    category_id = request.GET.get("category")
+    provider_services = ProviderService.objects.filter(is_available=True)
+    selected_category = None
+
+    if category_id:
+        provider_services = provider_services.filter(service__category_id=category_id)
+        selected_category = Category.objects.filter(id=category_id).first()
+
+    return render(request, "manage_service/service.html", {
+        "provider_services": provider_services,
+        "selected_category": selected_category
+    })

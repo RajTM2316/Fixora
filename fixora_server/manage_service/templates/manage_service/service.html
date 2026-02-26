@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Fixora | Browse Services{% endblock %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .card-interactive {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-interactive:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.15);
+    }
+
+    .tap-effect:active {
+        transform: scale(0.96);
+    }
+
+    .category-pill:hover {
+        background-color: #4f46e5;
+        color: white;
+    }
+</style>
+
+<body class="bg-brand-surface min-h-screen">
+    <main class="max-w-7xl mx-auto px-6 py-8">
+
+        <header class="mb-10">
+            <nav class="flex text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">
+                <a href="/" class="hover:text-brand-action transition">Home</a>
+                <span class="mx-2">/</span>
+                <span class="text-brand-dark">Services</span>
+            </nav>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-brand-dark">
+                {% if selected_category %}
+                Expert <span class="text-brand-action">{{ selected_category.name }}</span> Pros
+                {% else %}
+                Find the <span class="text-brand-action">Right Expert</span>
+                {% endif %}
+            </h1>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <aside class="hidden lg:block w-64 flex-shrink-0">
+                <div class="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm sticky top-24">
+                    <h3 class="font-bold text-brand-dark mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-filter text-brand-action"></i>
+                        Categories
+                    </h3>
+                    <div class="space-y-2">
+                        {% for cat in categories %}
+                        <a href="?category={{ cat.id }}"
+                            class="block px-4 py-2 rounded-xl text-sm font-bold transition-all 
+                           {% if selected_category.id == cat.id %} bg-brand-action text-white {% else %} text-gray-500 hover:bg-indigo-50 hover:text-brand-action {% endif %}">
+                            {{ cat.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </aside>
+
+            <div class="flex-grow">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {% for ps in provider_services %}
+                    <article
+                        class="card-interactive bg-white rounded-[28px] border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+
+                        <div class="p-6 pb-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full border-2 border-indigo-50 p-0.5">
+                                    {% if ps.provider.profile_picture %}
+                                    <img src="{{ ps.provider.profile_picture.url }}"
+                                        class="w-full h-full rounded-full object-cover">
+                                    {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ ps.provider.user.username }}&background=4f46e5&color=fff"
+                                        class="w-full h-full rounded-full">
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h4 class="text-brand-dark font-extrabold text-sm">{{ ps.provider.user.username }}
+                                    </h4>
+                                    <div class="flex items-center text-yellow-500 text-[10px]">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <span class="ml-1 text-gray-400 font-bold">4.9 (42 Jobs)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span
+                                class="w-8 h-8 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-xs"
+                                title="Verified Pro">
+                                <i class="fa-solid fa-user-check"></i>
+                            </span>
+                        </div>
+
+                        <div class="px-6 py-4 flex-grow">
+                            <h3 class="text-xl font-bold text-brand-dark mb-2 leading-tight">
+                                {{ ps.service.name }}
+                            </h3>
+                            <p class="text-gray-400 text-xs line-clamp-2">
+                                Professional service for your home. Expert handling with guaranteed satisfaction.
+                            </p>
+                        </div>
+
+                        <div
+                            class="px-6 py-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between mt-auto">
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase">Rate</p>
+                                <p class="text-lg font-black text-brand-dark">₹{{ ps.price|default:"599" }}</p>
+                            </div>
+
+                            <a href="/bookings/checkout/{{ ps.id }}/"
+                                class="bg-brand-action text-white px-6 py-3 rounded-xl font-bold text-sm tap-effect hover:bg-brand-dark shadow-md shadow-indigo-100 transition-colors">
+                                Book Now
+                            </a>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <div
+                        class="col-span-full py-20 text-center bg-white rounded-[32px] border-2 border-dashed border-gray-100">
+                        <div
+                            class="w-20 h-20 bg-brand-surface rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                            <i class="fa-solid fa-magnifying-glass text-3xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brand-dark mb-2">No Pros Found</h3>
+                        <p class="text-gray-400 max-w-xs mx-auto">We couldn't find any service providers in this
+                            category right now. Try another one!</p>
+                        <a href="/services/" class="inline-block mt-6 text-brand-action font-bold hover:underline">View
+                            All Services</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+{% endblock %}

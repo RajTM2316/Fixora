@@ -15,5 +15,5 @@ urlpatterns = [
     name="toggle_service_availability"
 ),
 path("my-bookings/", views.my_bookings, name="my_bookings"),
-
+path("service/", views.service_view, name="service_view"),
 ]

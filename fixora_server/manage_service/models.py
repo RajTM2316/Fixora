@@ -31,6 +31,7 @@ class ProviderService(models.Model):
         return f"{self.provider.user.username} - {self.service.name}"
 
 
+
 class ServiceRequest(models.Model):
     STATUS_CHOICES = [
         ("PENDING", "Pending"),
@@ -38,7 +39,7 @@ class ServiceRequest(models.Model):
         ("COMPLETED", "Completed"),
         ("CANCELLED", "Cancelled"),
     ]
-
+    
     customer = models.ForeignKey("manage_user.Profile", on_delete=models.CASCADE, related_name="requests")
     provider_service = models.ForeignKey(ProviderService, on_delete=models.CASCADE)
 
