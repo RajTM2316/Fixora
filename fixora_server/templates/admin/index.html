@@ -1,141 +1,199 @@
 {% extends "admin/index.html" %}
+
 {% block content %}
-
-<h2 style="margin-bottom:20px;">Fixora Business Overview</h2>
-
-<div class="stats-grid">
-
-    <div class="stat-card">
-        <h3>{{ total_customers }}</h3>
-        <p>Customers</p>
+<div class="fixora-wrapper">
+    <div class="dashboard-header">
+        <h1>Fixora Business Overview</h1>
+        <p>Key Performance Indicators</p>
     </div>
 
-    <div class="stat-card">
-        <h3>{{ total_providers }}</h3>
-        <p>Providers</p>
+    <div class="stats-grid">
+        <div class="stat-card card-blue">
+            <label>TOTAL CUSTOMERS</label>
+            <div class="value">{{ total_customers|default:"0" }}</div>
+        </div>
+        <div class="stat-card card-purple">
+            <label>TOTAL PROVIDERS</label>
+            <div class="value">{{ total_providers|default:"0" }}</div>
+        </div>
+
+        <div class="stat-card card-indigo">
+            <label>TOTAL CATEGORIES</label>
+            <div class="value">{{ total_categories|default:"0" }}</div>
+        </div>
+
+        <div class="stat-card border-green">
+            <label>ACTIVE CATEGORIES</label>
+            <div class="value text-green">{{ active_categories|default:"0" }}</div>
+        </div>
+        <div class="stat-card card-revenue">
+            <label>NET REVENUE</label>
+            <div class="value"><span>₹</span>{{ net_revenue|default:"0" }}</div>
+        </div>
+        <div class="stat-card border-amber">
+            <label>PENDING</label>
+            <div class="value text-amber">{{ pending_requests|default:"0" }}</div>
+        </div>
+        <div class="stat-card border-emerald">
+            <label>COMPLETED</label>
+            <div class="value text-emerald">{{ completed_requests|default:"0" }}</div>
+        </div>
+        <div class="stat-card border-rose">
+            <label>CANCELLED</label>
+            <div class="value text-rose">{{ cancelled_requests|default:"0" }}</div>
+        </div>
     </div>
 
-    <div class="stat-card">
-        <h3>{{ total_requests }}</h3>
-        <p>Total Requests</p>
+    <div class="admin-models-list">
+        {{ block.super }}
     </div>
-
-    <div class="stat-card warning">
-        <h3>{{ pending_requests }}</h3>
-        <p>Pending</p>
-    </div>
-
-    <div class="stat-card success">
-        <h3>{{ completed_requests }}</h3>
-        <p>Completed</p>
-    </div>
-
-    <div class="stat-card danger">
-        <h3>{{ cancelled_requests }}</h3>
-        <p>Cancelled</p>
-    </div>
-
-    <div class="stat-card revenue">
-        <h3>₹ {{ net_revenue }}</h3>
-        <p>Net Revenue</p>
-    </div>
-
-    <div class="stat-card">
-        <h3>{{ completion_rate }}%</h3>
-        <p>Completion Rate</p>
-    </div>
-
-    <div class="stat-card">
-        <h3>{{ cancel_rate }}%</h3>
-        <p>Cancel Rate</p>
-    </div>
-
 </div>
 
-<hr style="margin:40px 0;">
-
-<h2>Recent Service Requests</h2>
-
-<table class="recent-table">
-    <tr>
-        <th>Customer</th>
-        <th>Provider</th>
-        <th>Status</th>
-        <th>Date</th>
-    </tr>
-    {% for req in recent_requests %}
-    <tr>
-        <td>{{ req.customer.user.username }}</td>
-        <td>{{ req.provider_service.provider.user.username }}</td>
-        <td>{{ req.status }}</td>
-        <td>{{ req.request_date }}</td>
-    </tr>
-    {% empty %}
-    <tr>
-        <td colspan="4">No recent requests</td>
-    </tr>
-    {% endfor %}
-</table>
-
-{{ block.super }}
-
 <style>
+    /* FIX: Remove the black sidebar and make content full width */
+
+    #content-related {
+        display: none !important;
+    }
+
+    #content-main {
+        width: 100% !important;
+        float: none !important;
+        margin: 0 !important;
+    }
+
+    #content {
+        background: #f8fafc !important;
+        padding: 0 !important;
+    }
+
+    .fixora-wrapper {
+        padding: 40px;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Roboto, sans-serif !important;
+    }
+
+    .dashboard-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .dashboard-header p {
+        color: #64748b;
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+
+    /* Stats Grid - Evenly Spaced */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 20px;
-        margin-bottom: 40px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 50px;
     }
 
     .stat-card {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-        text-align: center;
+        background: #ffffff !important;
+        padding: 30px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
-    .stat-card h3 {
-        margin: 0;
-        font-size: 28px;
+    .stat-card label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 10px;
     }
 
-    .stat-card p {
-        margin-top: 8px;
-        color: gray;
+    .stat-card .value {
+        font-size: 40px;
+        font-weight: 800;
+        color: #0f172a;
     }
 
-    .warning {
-        border-left: 6px solid orange;
+    .stat-card .value span {
+        font-size: 24px;
+        margin-right: 5px;
     }
 
-    .success {
-        border-left: 6px solid green;
+    /* Accents */
+    .card-blue {
+        border-top: 6px solid #3b82f6;
     }
 
-    .danger {
-        border-left: 6px solid red;
+    .card-purple {
+        border-top: 6px solid #8b5cf6;
     }
 
-    .revenue {
-        border-left: 6px solid #4CAF50;
+    .card-revenue {
+        background: #10b981 !important;
+        color: white !important;
+        border: none;
     }
 
-    .recent-table {
-        width: 100%;
-        border-collapse: collapse;
+    .card-revenue label,
+    .card-revenue .value {
+        color: white !important;
     }
 
-    .recent-table th,
-    .recent-table td {
-        padding: 10px;
-        border-bottom: 1px solid #eee;
-        text-align: left;
+    .border-amber {
+        border-left: 8px solid #f59e0b;
     }
 
-    .recent-table th {
-        background: #f9f9f9;
+    .border-emerald {
+        border-left: 8px solid #10b981;
+    }
+
+    .border-rose {
+        border-left: 8px solid #ef4444;
+    }
+
+    .text-amber {
+        color: #f59e0b !important;
+    }
+
+    .text-emerald {
+        color: #10b981 !important;
+    }
+
+    .text-rose {
+        color: #ef4444 !important;
+    }
+
+    /* Registered Models Styling */
+    .admin-models-list .module {
+        background: white !important;
+        border-radius: 12px !important;
+        overflow: hidden;
+        border: 1px solid #e2e8f0 !important;
+        margin-bottom: 20px !important;
+    }
+
+    .admin-models-list caption {
+        background: #334155 !important;
+        color: white !important;
+        padding: 12px !important;
+        font-weight: 600 !important;
+    }
+
+    .card-indigo {
+        border-top: 6px solid #6366f1;
+    }
+
+    .border-green {
+        border-left: 8px solid #22c55e;
+    }
+
+    .text-green {
+        color: #22c55e !important;
     }
 </style>
-
 {% endblock %}
+
+{% block sidebar %}{% endblock %}
