@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-from .models import Category, ServiceRequest
+from .models import Category, ServiceRequest , ServiceRequestImage
 from manage_user.models import Profile
 from manage_service.models import ProviderService
 from django.contrib.admin.views.decorators import staff_member_required
@@ -156,4 +156,74 @@ def service_view(request):
     return render(request, "manage_service/service.html", {
         "provider_services": provider_services,
         "selected_category": selected_category
+    })
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Category, ServiceRequest, ServiceRequestImage, ProviderService
+from manage_user.models import Profile
+
+
+@login_required
+def create_request(request):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    # Only customers allowed
+    if profile.role != "customer":
+        return redirect("customer_home")
+
+    # Prevent multiple active bookings
+    active_request = ServiceRequest.objects.filter(
+        customer=profile,
+        status__in=["PENDING", "ACCEPTED"]
+    ).exists()
+
+    if active_request:
+        messages.error(request, "You already have an active booking.")
+        return redirect("my_bookings")
+
+    categories = Category.objects.filter(is_active=True)
+
+    if request.method == "POST":
+        category_id = request.POST.get("category")
+        description = request.POST.get("description")
+        address = request.POST.get("address")
+
+        if not category_id or not address:
+            messages.error(request, "Please fill all required fields.")
+            return redirect("create_request")
+
+        # Find available provider for selected category
+        provider_service = ProviderService.objects.filter(
+            service__category_id=category_id,
+            is_available=True
+        ).select_related("provider", "service").first()
+
+        if not provider_service:
+            messages.error(request, "No providers available for this category right now.")
+            return redirect("create_request")
+
+        # Create Service Request
+        service_request = ServiceRequest.objects.create(
+            customer=profile,
+            provider_service=provider_service,
+            address_text=address,
+            problem_description=description,
+            status="PENDING"
+        )
+
+        # Save uploaded images (multiple)
+        images = request.FILES.getlist("images")
+        for img in images:
+            ServiceRequestImage.objects.create(
+                request=service_request,
+                image=img
+            )
+
+        messages.success(request, "Service request created successfully.")
+        return redirect("my_bookings")
+
+    return render(request, "manage_service/create_service_request.html", {
+        "categories": categories
     })

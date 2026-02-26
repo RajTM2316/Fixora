@@ -16,4 +16,5 @@ urlpatterns = [
 ),
 path("my-bookings/", views.my_bookings, name="my_bookings"),
 path("service/", views.service_view, name="service_view"),
+path("create-request/", views.create_request, name="create_request"),
 ]

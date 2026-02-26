@@ -39,14 +39,29 @@ class ServiceRequest(models.Model):
         ("COMPLETED", "Completed"),
         ("CANCELLED", "Cancelled"),
     ]
-    
-    customer = models.ForeignKey("manage_user.Profile", on_delete=models.CASCADE, related_name="requests")
-    provider_service = models.ForeignKey(ProviderService, on_delete=models.CASCADE)
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
-    request_date = models.DateTimeField(auto_now_add=True)
+    customer = models.ForeignKey(
+        "manage_user.Profile",
+        on_delete=models.CASCADE,
+        related_name="requests"
+    )
+
+    provider_service = models.ForeignKey(
+        ProviderService,
+        on_delete=models.CASCADE
+    )
+    # Added later
+    problem_description = models.TextField(null=True, blank=True)
 
     address_text = models.TextField(null=True, blank=True)
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="PENDING"
+    )
+
+    request_date = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
