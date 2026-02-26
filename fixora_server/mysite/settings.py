@@ -132,9 +132,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Auth redirects
-LOGIN_URL = "/manage_user/"
+LOGIN_URL = "/"
 LOGIN_REDIRECT_URL = "/customer/home/"
-LOGOUT_REDIRECT_URL = "/manage_user/"
+LOGOUT_REDIRECT_URL = "/"
 
 CHANNEL_LAYERS = {
     "default": {
