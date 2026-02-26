@@ -6,7 +6,7 @@ from django.views.decorators.cache import never_cache
 from .models import Category, ServiceRequest
 from manage_user.models import Profile
 from manage_service.models import ProviderService
-
+from django.contrib.admin.views.decorators import staff_member_required
 
 # =========================
 # PROVIDER DASHBOARD
@@ -75,12 +75,8 @@ def customer_home(request):
 # =========================
 # ADD CATEGORY (ADMIN ONLY)
 # =========================
-@login_required
+@staff_member_required
 def add_category(request):
-    profile, created = Profile.objects.get_or_create(user=request.user)
-    if not request.user.is_superuser:
-        return HttpResponseForbidden("Only admin can add categories.")
-
     if request.method == "POST":
         name = request.POST.get("name")
         description = request.POST.get("description")
