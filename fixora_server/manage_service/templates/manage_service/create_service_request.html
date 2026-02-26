@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Create Service Request | Fixora{% endblock %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="max-w-3xl mx-auto py-12 px-6">
+
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+
+        <h2 class="text-3xl font-extrabold text-brand-dark mb-8">
+            Tell Us What You Need
+        </h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Category -->
+            <div class="mb-6">
+                <label class="block font-bold text-gray-600 mb-2">
+                    Select Service Category
+                </label>
+                <select name="category" required
+                    class="w-full rounded-xl border border-gray-200 p-4 focus:ring-2 focus:ring-brand-action">
+                    <option value="">Choose a category</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-6">
+                <label class="block font-bold text-gray-600 mb-2">
+                    Describe the Problem
+                </label>
+                <textarea name="description" required
+                    class="w-full rounded-xl border border-gray-200 p-4 focus:ring-2 focus:ring-brand-action"
+                    placeholder="Explain what issue you are facing..."></textarea>
+            </div>
+
+            <!-- Address -->
+            <div class="mb-6">
+                <label class="block font-bold text-gray-600 mb-2">
+                    Service Address
+                </label>
+                <textarea name="address" required
+                    class="w-full rounded-xl border border-gray-200 p-4 focus:ring-2 focus:ring-brand-action"></textarea>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="mb-8">
+                <label class="block font-bold text-gray-600 mb-2">
+                    Upload Problem Photos (Optional)
+                </label>
+                <input type="file" name="images" multiple
+                    class="w-full border border-gray-200 rounded-xl p-3">
+            </div>
+
+            <button type="submit"
+                class="w-full bg-brand-action hover:bg-brand-dark text-white py-4 rounded-xl font-bold transition-all">
+                Submit Request
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+{% endblock %}

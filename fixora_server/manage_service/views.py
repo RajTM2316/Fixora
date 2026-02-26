@@ -7,7 +7,7 @@ from .models import Category, ServiceRequest
 from manage_user.models import Profile
 from manage_service.models import ProviderService
 from django.contrib.admin.views.decorators import staff_member_required
-
+from .models import Category
 # =========================
 # PROVIDER DASHBOARD
 # =========================
