@@ -77,9 +77,8 @@ def customer_home(request):
 # =========================
 @login_required
 def add_category(request):
-    profile = get_object_or_404(Profile, user=request.user)
-
-    if profile.role != "admin":
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    if not request.user.is_superuser:
         return HttpResponseForbidden("Only admin can add categories.")
 
     if request.method == "POST":
