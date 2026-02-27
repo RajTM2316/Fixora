@@ -164,16 +164,19 @@ def my_bookings(request):
 
 def service_view(request):
     category_id = request.GET.get("category")
-    provider_services = ProviderService.objects.filter(is_available=True)
+    provider_services = ProviderService.objects.filter(
+        is_available=True
+    ).select_related("service", "provider__user")
     selected_category = None
-
+    categories= Category.objects.filter(is_active=True)
     if category_id:
         provider_services = provider_services.filter(service__category_id=category_id)
         selected_category = Category.objects.filter(id=category_id).first()
 
     return render(request, "manage_service/service.html", {
         "provider_services": provider_services,
-        "selected_category": selected_category
+        "selected_category": selected_category,
+        "categories": categories
     })
 
 @login_required
@@ -300,7 +303,7 @@ def add_service(request):
         return HttpResponseForbidden("Access denied.")
 
     if request.method == "POST":
-        form = ServiceForm(request.POST, request.FILES)  # ✅ Important for image upload
+        form = ServiceForm(request.POST, request.FILES)  
         if form.is_valid():
             service = form.save(commit=False)
 

@@ -68,6 +68,12 @@
                     {% for ps in provider_services %}
                     <article
                         class="card-interactive bg-white rounded-[28px] border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+                        {% if ps.service.service_image %}
+                        <img src="{{ ps.service.service_image.url }}" class="w-full h-44 object-cover">
+                        {% else %}
+                        <img src="https://via.placeholder.com/600x300?text=Service+Image"
+                            class="w-full h-44 object-cover">
+                        {% endif %}
 
                         <div class="p-6 pb-4 flex items-center justify-between">
                             <div class="flex items-center gap-3">
@@ -104,7 +110,11 @@
                                 {{ ps.service.name }}
                             </h3>
                             <p class="text-gray-400 text-xs line-clamp-2">
-                                Professional service for your home. Expert handling with guaranteed satisfaction.
+                                {% if ps.service.description %}
+                                {{ ps.service.description }}
+                                {% else %}
+                                Professional service with guaranteed satisfaction.
+                                {% endif %}
                             </p>
                         </div>
 
@@ -112,7 +122,16 @@
                             class="px-6 py-6 bg-gray-50/50 border-t border-gray-50 flex items-center justify-between mt-auto">
                             <div>
                                 <p class="text-[10px] text-gray-400 font-bold uppercase">Rate</p>
-                                <p class="text-lg font-black text-brand-dark">₹{{ ps.price|default:"599" }}</p>
+                                <p class="text-lg font-black text-brand-dark">
+                                    ₹
+                                    {% if ps.price %}
+                                    {{ ps.price }}
+                                    {% elif ps.service.base_price %}
+                                    {{ ps.service.base_price }}
+                                    {% else %}
+                                    599
+                                    {% endif %}
+                                </p>
                             </div>
 
                             <a href="/bookings/checkout/{{ ps.id }}/"
