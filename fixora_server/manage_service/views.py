@@ -16,18 +16,38 @@ from .models import Category
 def provider_dashboard(request):
     profile = get_object_or_404(Profile, user=request.user)
 
-    # Optional role protection
     if profile.role != "provider":
         return HttpResponseForbidden("Access denied.")
 
     provider_services = ProviderService.objects.filter(provider=profile)
 
+    # Incoming PENDING requests
+    incoming_requests = ServiceRequest.objects.filter(
+        provider_service__provider=profile,
+        status="PENDING"
+    ).select_related(
+        "customer__user",
+        "provider_service__service"
+    ).order_by("-request_date")
+
+    # Active job
+    active_job = ServiceRequest.objects.filter(
+        provider_service__provider=profile,
+        status="ACCEPTED"
+    ).first()
+
+    # Completed jobs
+    job_history = ServiceRequest.objects.filter(
+        provider_service__provider=profile,
+        status="COMPLETED"
+    ).order_by("-request_date")
+
     return render(request, "manage_service/provider_dashboard.html", {
         "profile": profile,
         "provider_services": provider_services,
-        "incoming_requests": [],
-        "active_job": None,
-        "job_history": [],
+        "incoming_requests": incoming_requests,
+        "active_job": active_job,
+        "job_history": job_history,
     })
 
 
@@ -142,8 +162,6 @@ def my_bookings(request):
 # SERVICE VIEW 
 # ========================= 
 
-from django.shortcuts import render
-
 def service_view(request):
     category_id = request.GET.get("category")
     provider_services = ProviderService.objects.filter(is_available=True)
@@ -157,13 +175,6 @@ def service_view(request):
         "provider_services": provider_services,
         "selected_category": selected_category
     })
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import Category, ServiceRequest, ServiceRequestImage, ProviderService
-from manage_user.models import Profile
-
 
 @login_required
 def create_request(request):
@@ -227,3 +238,57 @@ def create_request(request):
     return render(request, "manage_service/create_service_request.html", {
         "categories": categories
     })
+
+@login_required
+def accept_request(request, request_id):
+    profile = request.user.profile
+
+    service_request = get_object_or_404(
+        ServiceRequest,
+        id=request_id,
+        provider_service__provider=profile
+    )
+
+    if service_request.status == "PENDING":
+        service_request.status = "ACCEPTED"
+        service_request.save()
+
+    return redirect("provider_dashboard")
+
+
+@login_required
+def reject_request(request, request_id):
+    profile = request.user.profile
+
+    service_request = get_object_or_404(
+        ServiceRequest,
+        id=request_id,
+        provider_service__provider=profile
+    )
+
+    if service_request.status == "PENDING":
+        service_request.status = "CANCELLED"
+        service_request.save()
+
+    return redirect("provider_dashboard")
+
+@login_required
+def complete_request(request, request_id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    # Only providers allowed
+    if profile.role != "provider":
+        return HttpResponseForbidden("Access denied.")
+
+    service_request = get_object_or_404(
+        ServiceRequest,
+        id=request_id,
+        provider_service__provider=profile
+    )
+
+    # Only allow completion if already accepted
+    if service_request.status == "ACCEPTED":
+        service_request.status = "COMPLETED"
+        service_request.save()
+
+    return redirect("provider_dashboard")

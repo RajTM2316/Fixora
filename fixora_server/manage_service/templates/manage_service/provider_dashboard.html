@@ -4,6 +4,7 @@
 {% block content %}
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <script>
     tailwind.config = {
         theme: {
@@ -31,198 +32,182 @@
         border-top: 1px solid rgba(0,0,0,0.05);
     }
     .tap-effect:active { transform: scale(0.98); }
-    
-    /* Custom Toggle Switch */
-    .toggle-checkbox:checked {
-        right: 0;
-        border-color: #10b981;
-    }
-    .toggle-checkbox:checked + .toggle-label {
-        background-color: #10b981;
-    }
 </style>
 
 <body class="bg-brand-surface pb-32">
 
-    <header class="px-6 pt-10 pb-6 bg-white rounded-b-[30px] shadow-sm mb-6">
-        <div class="flex justify-between items-center mb-6">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-action text-white rounded-full flex items-center justify-center font-bold">
-                    {{ user.username|slice:":1" }}
-                </div>
-                <div>
-                    <h2 class="font-bold text-brand-dark leading-tight">Hello, {{ user.username }}</h2>
-                    <p class="text-xs text-gray-500">Service Provider</p>
-                </div>
+<header class="px-6 pt-10 pb-6 bg-white rounded-b-[30px] shadow-sm mb-6">
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-brand-action text-white rounded-full flex items-center justify-center font-bold">
+                {{ user.username|slice:":1" }}
             </div>
-            <a href="{% url 'logout' %}" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
-                <i class="fa-solid fa-power-off"></i>
-            </a>
+            <div>
+                <h2 class="font-bold text-brand-dark leading-tight">Hello, {{ user.username }}</h2>
+                <p class="text-xs text-gray-500">Service Provider</p>
+            </div>
         </div>
-
-    </header>
-
-    <main class="px-6 space-y-8">
-        <section>
-            <h2 class="text-lg font-bold text-brand-dark mb-4">Service Availability</h2>
-        
-            {% for ps in provider_services %}
-            <form method="POST" action="{% url 'toggle_service_availability' ps.id %}">
-                {% csrf_token %}
-                <div class="bg-brand-dark p-5 rounded-[20px] flex justify-between items-center text-white mb-4">
-        
-                    <div>
-                        <p class="text-gray-400 text-xs uppercase">
-                            {{ ps.service.name }}
-                        </p>
-                        <h3 class="text-xl font-bold">
-                            {% if ps.is_available %}
-                                <i class="fa-solid fa-circle text-brand-success text-xs"></i> Available
-                            {% else %}
-                                <i class="fa-solid fa-circle text-gray-500 text-xs"></i> Unavailable
-                            {% endif %}
-                        </h3>
-                    </div>
-        
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox"
-                               name="is_available"
-                               class="sr-only peer"
-                               onchange="this.form.submit()"
-                               {% if ps.is_available %}checked{% endif %}>
-                        <div class="w-14 h-7 bg-gray-600 rounded-full peer-checked:bg-brand-success
-                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                                    after:bg-white after:rounded-full after:h-6 after:w-6
-                                    after:transition-all peer-checked:after:translate-x-full">
-                        </div>
-                    </label>
-                </div>
-            </form>
-            {% empty %}
-                <p class="text-gray-400">No services added yet.</p>
-            {% endfor %}
-        </section>
-        <section>
-            <div class="flex justify-between items-end mb-4">
-                <h2 class="text-lg font-bold text-brand-dark">New Requests</h2>
-                <span class="text-xs font-bold bg-brand-action text-white px-2 py-1 rounded-md">{{ incoming_requests.count }}</span>
-            </div>
-
-            <div class="space-y-4">
-                {% for request in incoming_requests %}
-                <div class="bg-white p-5 rounded-[24px] shadow-sm border border-gray-100 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-brand-action"></div>
-                    
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h3 class="font-bold text-brand-dark text-lg">{{ request.provider_service.service.name }}</h3>
-                            <p class="text-sm text-gray-500"><i class="fa-solid fa-user-tag mr-1"></i> {{ request.customer.user.username }}</p>
-                        </div>
-                        <div class="bg-indigo-50 text-brand-action p-2 rounded-lg">
-                            <i class="fa-solid fa-map-pin"></i>
-                        </div>
-                    </div>
-                    
-                    <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded-xl mb-4">
-                        <i class="fa-solid fa-location-dot text-gray-400 mr-2"></i>{{ request.address_text }}
-                    </p>
-
-                    <form method="POST" action="/provider/respond/{{ request.id }}/" class="grid grid-cols-2 gap-3">
-                        {% csrf_token %}
-                        <button name="action" value="reject" class="py-3 rounded-xl border-2 border-gray-100 text-gray-500 font-bold text-sm tap-effect">
-                            Ignore
-                        </button>
-                        <button name="action" value="accept" class="py-3 rounded-xl bg-brand-dark text-white font-bold text-sm shadow-lg shadow-indigo-200 tap-effect">
-                            Accept Job
-                        </button>
-                    </form>
-                </div>
-                {% empty %}
-                <div class="text-center py-8 bg-white rounded-[24px] border-2 border-dashed border-gray-100">
-                    <i class="fa-solid fa-inbox text-4xl text-gray-200 mb-2"></i>
-                    <p class="text-gray-400 text-sm">No pending requests.</p>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-
-        {% if active_job %}
-        <section>
-            <h2 class="text-lg font-bold text-brand-dark mb-4">Active Job</h2>
-            <div class="bg-brand-action p-6 rounded-[24px] text-white shadow-xl shadow-indigo-200 relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
-
-                <div class="relative z-10">
-                    <div class="flex justify-between items-start mb-6">
-                        <div>
-                            <span class="bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm">In Progress</span>
-                            <h3 class="text-2xl font-bold mt-2">{{ active_job.provider_service.service.name }}</h3>
-                        </div>
-                        <a href="/chat/{{ active_job.id }}/" class="w-10 h-10 bg-white text-brand-action rounded-full flex items-center justify-center tap-effect">
-                            <i class="fa-solid fa-comment"></i>
-                        </a>
-                    </div>
-
-                    <div class="space-y-3 mb-6">
-                        <div class="flex items-center gap-3 text-indigo-100">
-                            <i class="fa-solid fa-user w-5"></i>
-                            <span class="text-sm font-medium">{{ active_job.customer.user.username }}</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-indigo-100">
-                            <i class="fa-solid fa-location-arrow w-5"></i>
-                            <span class="text-sm font-medium">{{ active_job.address_text|truncatechars:30 }}</span>
-                        </div>
-                    </div>
-
-                    <form method="POST" action="/provider/complete/{{ active_job.id }}/">
-                        {% csrf_token %}
-                        <button type="submit" class="w-full bg-white text-brand-action font-bold py-3 rounded-xl shadow-sm tap-effect">
-                            <i class="fa-solid fa-check-circle mr-2"></i> Mark Completed
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </section>
-        {% endif %}
-
-        <section class="pb-24">
-            <h2 class="text-lg font-bold text-brand-dark mb-4">Recent History</h2>
-            <div class="bg-white rounded-[24px] p-4 shadow-sm">
-                {% for job in job_history %}
-                <div class="flex justify-between items-center py-3 border-b border-gray-50 last:border-0">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
-                            <i class="fa-solid fa-clock-rotate-left text-xs"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-brand-dark text-sm">{{ job.provider_service.service.name }}</p>
-                            <p class="text-[10px] text-gray-400">{{ job.request_date|date:"M d" }}</p>
-                        </div>
-                    </div>
-                    <span class="text-xs font-bold {% if job.status == 'Completed' %}text-brand-success{% else %}text-gray-400{% endif %}">
-                        {{ job.status }}
-                    </span>
-                </div>
-                {% empty %}
-                <p class="text-center text-gray-400 text-sm py-4">No job history found.</p>
-                {% endfor %}
-            </div>
-        </section>
-    </main>
-
-    <div class="fixed bottom-0 left-0 right-0 glass-panel px-8 py-4 flex justify-between items-center z-50 rounded-t-[30px]">
-        <a href="#" class="flex flex-col items-center gap-1 text-brand-action tap-effect">
-            <i class="fa-solid fa-layer-group text-xl"></i>
-            <span class="text-[10px] font-bold">Dashboard</span>
-        </a>
-        <div class="w-12 h-12 bg-brand-dark rounded-full flex items-center justify-center -mt-8 shadow-lg shadow-brand-dark/30 tap-effect border-4 border-brand-surface">
-            <i class="fa-solid fa-qrcode text-white"></i>
-        </div>
-        <a href="/provider/profile/" class="flex flex-col items-center gap-1 text-gray-400 tap-effect">
-            <i class="fa-solid fa-user-gear text-xl"></i>
-            <span class="text-[10px] font-bold">Profile</span>
+        <a href="{% url 'logout' %}" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+            <i class="fa-solid fa-power-off"></i>
         </a>
     </div>
+</header>
+
+<main class="px-6 space-y-8">
+
+    <!-- Incoming Requests -->
+    <section>
+        <div class="flex justify-between items-end mb-4">
+            <h2 class="text-lg font-bold text-brand-dark">New Requests</h2>
+            <span class="text-xs font-bold bg-brand-action text-white px-2 py-1 rounded-md">
+                {{ incoming_requests.count }}
+            </span>
+        </div>
+
+        <div class="space-y-4">
+            {% for request in incoming_requests %}
+            <div class="bg-white p-5 rounded-[24px] shadow-sm border border-gray-100 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-brand-action"></div>
+
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="font-bold text-brand-dark text-lg">
+                            {{ request.provider_service.service.name }}
+                        </h3>
+                        <p class="text-sm text-gray-500">
+                            <i class="fa-solid fa-user-tag mr-1"></i>
+                            {{ request.customer.user.username }}
+                        </p>
+                    </div>
+                </div>
+
+                <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded-xl mb-3">
+                    <i class="fa-solid fa-location-dot text-gray-400 mr-2"></i>
+                    {{ request.address_text }}
+                </p>
+
+                {% if request.problem_description %}
+                <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded-xl mb-3">
+                    <i class="fa-solid fa-comment-dots text-gray-400 mr-2"></i>
+                    {{ request.problem_description }}
+                </p>
+                {% endif %}
+
+                {% with request.servicerequestimage_set.all as images %}
+                {% if images %}
+                <div class="flex gap-2 flex-wrap mb-4">
+                    {% for img in images %}
+                        <img src="{{ img.image.url }}"
+                             class="w-20 h-20 object-cover rounded-lg border border-gray-100">
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                <div class="grid grid-cols-2 gap-3">
+                    <a href="{% url 'reject_request' request.id %}"
+                       class="py-3 rounded-xl border-2 border-gray-100 text-gray-500 font-bold text-sm tap-effect text-center">
+                        Ignore
+                    </a>
+
+                    <a href="{% url 'accept_request' request.id %}"
+                       class="py-3 rounded-xl bg-brand-dark text-white font-bold text-sm shadow-lg shadow-indigo-200 tap-effect text-center">
+                        Accept Job
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-8 bg-white rounded-[24px] border-2 border-dashed border-gray-100">
+                <i class="fa-solid fa-inbox text-4xl text-gray-200 mb-2"></i>
+                <p class="text-gray-400 text-sm">No pending requests.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Active Job -->
+    {% if active_job %}
+    <section>
+        <h2 class="text-lg font-bold text-brand-dark mb-4">Active Job</h2>
+
+        <div class="bg-brand-action p-6 rounded-[24px] text-white shadow-xl relative overflow-hidden">
+            <div class="relative z-10">
+
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                            In Progress
+                        </span>
+                        <h3 class="text-2xl font-bold mt-2">
+                            {{ active_job.provider_service.service.name }}
+                        </h3>
+                    </div>
+                    <a href="/chat/{{ active_job.id }}/"
+                       class="w-10 h-10 bg-white text-brand-action rounded-full flex items-center justify-center tap-effect">
+                        <i class="fa-solid fa-comment"></i>
+                    </a>
+                </div>
+
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center gap-3 text-indigo-100">
+                        <i class="fa-solid fa-user w-5"></i>
+                        <span class="text-sm font-medium">
+                            {{ active_job.customer.user.username }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-3 text-indigo-100">
+                        <i class="fa-solid fa-location-arrow w-5"></i>
+                        <span class="text-sm font-medium">
+                            {{ active_job.address_text|truncatechars:30 }}
+                        </span>
+                    </div>
+                </div>
+
+                <form method="POST" action="{% url 'complete_request' active_job.id %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="w-full bg-white text-brand-action font-bold py-3 rounded-xl shadow-sm tap-effect">
+                        <i class="fa-solid fa-check-circle mr-2"></i>
+                        Mark Completed
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Job History -->
+    <section class="pb-24">
+        <h2 class="text-lg font-bold text-brand-dark mb-4">Recent History</h2>
+        <div class="bg-white rounded-[24px] p-4 shadow-sm">
+
+            {% for job in job_history %}
+            <div class="flex justify-between items-center py-3 border-b border-gray-50 last:border-0">
+                <div>
+                    <p class="font-bold text-brand-dark text-sm">
+                        {{ job.provider_service.service.name }}
+                    </p>
+                    <p class="text-[10px] text-gray-400">
+                        {{ job.request_date|date:"M d" }}
+                    </p>
+                </div>
+
+                <span class="text-xs font-bold text-brand-success">
+                    {{ job.status }}
+                </span>
+            </div>
+            {% empty %}
+            <p class="text-center text-gray-400 text-sm py-4">
+                No job history found.
+            </p>
+            {% endfor %}
+
+        </div>
+    </section>
+
+</main>
 
 </body>
 {% endblock %}
