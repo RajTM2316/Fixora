@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-2xl">
+
+        <h2 class="text-3xl font-bold text-center text-blue-600 mb-6">
+            Add New Service
+        </h2>
+
+        <!-- Success Messages -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-700">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-5">
+            {% csrf_token %}
+
+            <!-- Service Name -->
+            <div>
+                <label class="block mb-2 font-semibold text-gray-700">
+                    Service Name
+                </label>
+                {{ form.name }}
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block mb-2 font-semibold text-gray-700">
+                    Description
+                </label>
+                {{ form.description }}
+            </div>
+
+            <!-- Base Price -->
+            <div>
+                <label class="block mb-2 font-semibold text-gray-700">
+                    Base Price (₹)
+                </label>
+                {{ form.base_price }}
+            </div>
+
+            <!-- Service Image -->
+            <div>
+                <label class="block mb-2 font-semibold text-gray-700">
+                    Service Image
+                </label>
+                {{ form.service_image }}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300 shadow-md">
+                    Add Service
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+
+</html>
