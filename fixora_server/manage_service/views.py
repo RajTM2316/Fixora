@@ -280,3 +280,47 @@ def complete_request(request, request_id):
     service_request.save()
 
     return redirect("provider_dashboard")
+
+# =========================
+#Add Service View
+# =========================
+from .forms import ServiceForm
+from .models import ProviderService
+
+
+def add_service(request):
+    # Make sure user is logged in
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    profile = request.user.profile
+
+    # Allow only providers
+    if profile.role != "provider":
+        return HttpResponseForbidden("Access denied.")
+
+    if request.method == "POST":
+        form = ServiceForm(request.POST, request.FILES)  # ✅ Important for image upload
+        if form.is_valid():
+            service = form.save(commit=False)
+
+            # Automatically set category from provider profile
+            service.category = profile.category
+            service.save()
+
+            # Create ProviderService entry
+            ProviderService.objects.create(
+                provider=profile,
+                service=service,
+                is_available=True
+            )
+
+            messages.success(request, "Service created successfully.")
+            return redirect("provider_dashboard")
+
+    else:
+        form = ServiceForm()
+
+    return render(request, "manage_service/add_service.html", {
+        "form": form
+    })
