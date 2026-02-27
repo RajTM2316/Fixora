@@ -17,6 +17,7 @@ class Service(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     base_price = models.DecimalField(max_digits=10, decimal_places=2)
+    service_image = models.ImageField(upload_to="service_images/", default="service_images/default.jpg", null=True, blank=True)
 
     def __str__(self):
         return self.name
