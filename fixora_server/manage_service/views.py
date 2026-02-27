@@ -238,3 +238,45 @@ def create_request(request):
     return render(request, "manage_service/create_service_request.html", {
         "categories": categories
     })
+
+@login_required
+def accept_request(request, request_id):
+    service_request = get_object_or_404(ServiceRequest, id=request_id)
+    service_request.status = "Accepted"
+    service_request.save()
+    return redirect("provider_dashboard")
+@login_required
+def reject_request(request, request_id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "provider":
+        return HttpResponseForbidden("Access denied.")
+
+    service_request = get_object_or_404(
+        ServiceRequest,
+        id=request_id,
+        provider_service__provider=profile
+    )
+
+    service_request.status = "REJECTED"
+    service_request.save()
+
+    return redirect("provider_dashboard")
+@login_required
+def complete_request(request, request_id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "provider":
+        return HttpResponseForbidden("Access denied.")
+
+    service_request = get_object_or_404(
+        ServiceRequest,
+        id=request_id,
+        provider_service__provider=profile,
+        status="ACCEPTED"
+    )
+
+    service_request.status = "COMPLETED"
+    service_request.save()
+
+    return redirect("provider_dashboard")
