@@ -370,3 +370,57 @@ def booking_detail(request, booking_id):
     return render(request, "manage_service/booking_detail.html", {
         "booking": booking
     })
+@login_required
+def book_service(request, ps_id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    # Only customers allowed
+    if profile.role != "customer":
+        return HttpResponseForbidden("Access denied.")
+
+    provider_service = get_object_or_404(
+        ProviderService.objects.select_related("provider__user", "service"),
+        id=ps_id,
+        is_available=True
+    )
+
+    # Prevent multiple active bookings
+    active_request = ServiceRequest.objects.filter(
+        customer=profile,
+        status__in=["PENDING", "ACCEPTED"]
+    ).exists()
+
+    if active_request:
+        messages.error(request, "You already have an active booking.")
+        return redirect("my_bookings")
+
+    if request.method == "POST":
+        address = request.POST.get("address")
+        description = request.POST.get("description")
+
+        if not address:
+            messages.error(request, "Address is required.")
+            return redirect("book_service", ps_id=ps_id)
+
+        service_request = ServiceRequest.objects.create(
+            customer=profile,
+            provider_service=provider_service,
+            address_text=address,
+            problem_description=description,
+            status="PENDING"
+        )
+
+        # Save multiple uploaded images
+        images = request.FILES.getlist("images")
+        for img in images:
+            ServiceRequestImage.objects.create(
+                request=service_request,
+                image=img
+            )
+
+        messages.success(request, "Booking placed successfully.")
+        return redirect("my_bookings")
+
+    return render(request, "manage_service/book_service.html", {
+        "provider_service": provider_service
+    })

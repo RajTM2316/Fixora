@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Fixora | Book Service{% endblock %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    brand: { 
+                        dark: '#0f172a', 
+                        primary: '#0066ff', 
+                        action: '#4f46e5',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        surface: '#f8fafc'
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .tap-effect:active { transform: scale(0.98); }
+    
+    .file-upload-zone {
+        transition: all 0.3s ease;
+        background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23CBD5E1FF' stroke-width='2' stroke-dasharray='8%2c 8' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    }
+    .file-upload-zone:focus-within, .file-upload-zone:hover {
+        background-color: #f8fafc;
+        background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%234F46E5FF' stroke-width='2' stroke-dasharray='8%2c 8' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    }
+</style>
+
+<div class="bg-brand-surface min-h-screen text-slate-800 font-sans py-10 px-4 sm:px-6">
+    <div class="max-w-3xl mx-auto">
+
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-gray-500 hover:text-brand-action transition-colors font-medium mb-6 tap-effect">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back
+        </a>
+
+        <div class="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden">
+
+            <div class="p-6 sm:p-8 border-b border-gray-50 bg-gray-50/50 flex flex-col sm:flex-row justify-between gap-6">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-brand-action rounded-lg text-xs font-bold uppercase tracking-wide mb-3 border border-indigo-100">
+                        <i class="fa-solid fa-calendar-check"></i> New Booking
+                    </div>
+                    <h2 class="text-2xl font-bold text-brand-dark mb-4">
+                        {{ provider_service.service.name }}
+                    </h2>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                            {% if provider_service.provider.profile_picture %}
+                                <img src="{{ provider_service.provider.profile_picture.url }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{ provider_service.provider.user.username }}&background=4f46e5&color=fff" class="w-full h-full">
+                            {% endif %}
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Service Provider</p>
+                            <p class="font-semibold text-brand-dark">
+                                {{ provider_service.provider.user.username }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sm:text-right flex flex-col justify-center bg-white p-4 rounded-xl shadow-sm border border-gray-100 sm:w-48">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Estimated Cost</p>
+                    <p class="text-2xl font-bold text-brand-action">
+                        ₹ {{ provider_service.price|default:provider_service.service.base_price|default:"599" }}
+                    </p>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" class="p-6 sm:p-8 space-y-6">
+                {% csrf_token %}
+
+                <div class="group">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Service Address <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <div class="absolute top-3.5 left-3.5 text-gray-400 group-focus-within:text-brand-action transition-colors">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <textarea name="address" required
+                            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-action/20 focus:border-brand-action focus:bg-white outline-none transition-all duration-200 text-sm resize-none"
+                            rows="2"
+                            placeholder="Enter your full service address..."></textarea>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Describe the Problem</label>
+                    <div class="relative">
+                        <div class="absolute top-3.5 left-3.5 text-gray-400 group-focus-within:text-brand-action transition-colors">
+                            <i class="fa-solid fa-align-left"></i>
+                        </div>
+                        <textarea name="description"
+                            class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-action/20 focus:border-brand-action focus:bg-white outline-none transition-all duration-200 text-sm resize-none"
+                            rows="4"
+                            placeholder="Explain your issue in detail to help the provider prepare..."></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Upload Images <span class="text-gray-400 font-normal">(Optional)</span></label>
+                    <div class="file-upload-zone relative w-full h-32 rounded-xl flex flex-col items-center justify-center cursor-pointer bg-slate-50 group">
+                        <input type="file" name="images" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                        
+                        <div class="text-center z-10 transition-transform duration-300 group-hover:-translate-y-1">
+                            <div class="w-10 h-10 bg-indigo-50 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <i class="fa-solid fa-cloud-arrow-up text-lg group-hover:text-brand-action transition-colors"></i>
+                            </div>
+                            <p class="text-sm font-semibold text-brand-dark">Click to upload or drag and drop</p>
+                            <p class="text-xs text-gray-500 mt-1">Upload relevant photos of the issue</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-100 flex justify-end">
+                    <button type="submit"
+                        class="w-full sm:w-auto bg-brand-action hover:bg-brand-dark text-white px-8 py-3.5 rounded-xl font-bold shadow-md shadow-indigo-200 transform transition-all hover:-translate-y-0.5 tap-effect flex items-center justify-center gap-2">
+                        <span>Confirm Booking</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

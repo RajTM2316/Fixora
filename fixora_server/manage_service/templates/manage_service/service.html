@@ -134,7 +134,7 @@
                                 </p>
                             </div>
 
-                            <a href="/bookings/checkout/{{ ps.id }}/"
+                            <a href="{% url 'book_service' ps.id %}"
                                 class="bg-brand-action text-white px-6 py-3 rounded-xl font-bold text-sm tap-effect hover:bg-brand-dark shadow-md shadow-indigo-100 transition-colors">
                                 Book Now
                             </a>
