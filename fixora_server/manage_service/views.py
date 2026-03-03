@@ -354,3 +354,19 @@ def add_service(request):
     return render(request, "manage_service/add_service.html", {
         "form": form
     })
+@login_required
+def booking_detail(request, booking_id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "customer":
+        return HttpResponseForbidden("Access denied.")
+
+    booking = get_object_or_404(
+        ServiceRequest,
+        id=booking_id,
+        customer=profile
+    )
+
+    return render(request, "manage_service/booking_detail.html", {
+        "booking": booking
+    })

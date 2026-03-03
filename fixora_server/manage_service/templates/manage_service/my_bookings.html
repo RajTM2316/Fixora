@@ -185,7 +185,7 @@
                             Waiting for Confirmation
                         </button>
                         {% endif %}
-                        <a href="/customer/booking-details/{{ booking.id }}/"
+                        <a href="{% url 'booking_detail' booking.id %}"
                             class="flex-1 md:flex-none bg-brand-action text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md tap-effect hover:bg-brand-primary transition text-center">
                             View Details
                         </a>

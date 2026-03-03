@@ -17,4 +17,5 @@ urlpatterns = [
     path("reject-request/<int:request_id>/", views.reject_request, name="reject_request"),
     path("complete-request/<int:request_id>/", views.complete_request, name="complete_request"),
     path("provider/add-service/", views.add_service, name="add_service"),
+    path("customer/booking-details/<int:booking_id>/",views.booking_detail,name="booking_detail"),
     ]
