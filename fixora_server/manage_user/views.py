@@ -15,32 +15,57 @@ import json
 # =========================
 @never_cache
 def login_view(request):
-    if request.user.is_authenticated:
-        # Prevent logged-in users from seeing login again
-        if request.user.profile.role == "provider":
-            return redirect("manage_service:provider_dashboard")
-        return redirect("manage_service:customer_home")
 
+    # -------------------------
+    # If already logged in
+    # -------------------------
+    if request.user.is_authenticated:
+
+        # Block superuser from normal dashboard
+        if request.user.is_superuser:
+            return redirect("admin:index")
+
+        profile, _ = Profile.objects.get_or_create(user=request.user)
+
+        if profile.role == "provider":
+            return redirect("manage_service:provider_dashboard")
+        else:
+            return redirect("manage_service:customer_home")
+
+
+    # -------------------------
+    # Handle POST Login
+    # -------------------------
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        role = request.POST.get("role")
+        selected_role = request.POST.get("role")
 
         user = authenticate(request, username=username, password=password)
 
-        if user is not None:
-            if hasattr(user, "profile") and user.profile.role == role:
-                login(request, user)
+        if user is None:
+            messages.error(request, "Invalid username or password.")
+            return render(request, "manage_user/login.html")
 
-                # Correct namespaced redirects
-                if role == "provider":
-                    return redirect("manage_service:provider_dashboard")
-                else:
-                    return redirect("manage_service:customer_home")
-            else:
-                messages.error(request, "Incorrect role selected.")
+        # Block superuser from normal login
+        if user.is_superuser:
+            messages.error(request, "Admin users must login from admin panel.")
+            return redirect("admin:login")
+
+        profile, _ = Profile.objects.get_or_create(user=user)
+
+        # Role mismatch check
+        if profile.role != selected_role:
+            messages.error(request, "Incorrect role selected.")
+            return render(request, "manage_user/login.html")
+
+        # All checks passed
+        login(request, user)
+
+        if profile.role == "provider":
+            return redirect("manage_service:provider_dashboard")
         else:
-            messages.error(request, "Invalid username or password")
+            return redirect("manage_service:customer_home")
 
     return render(request, "manage_user/login.html")
 
