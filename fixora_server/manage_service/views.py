@@ -394,3 +394,32 @@ def add_service(request):
 # =========================
 # LOCATION MAP
 # =========================
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+@csrf_exempt
+def save_location(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+
+        if request.user.is_authenticated:
+            profile = Profile.objects.get(user=request.user)
+            profile.latitude = latitude
+            profile.longitude = longitude
+            profile.save()
+            return JsonResponse({"status": "success"})
+        else:
+            return JsonResponse({"status": "error", "message": "User not authenticated"}, status=401)
+
+    return JsonResponse({"status": "error", "message": "Invalid request method"}, status=400)
+
+@login_required
+def location_map(request):
+    profile = Profile.objects.get(user=request.user)
+
+    return render(request, "standalone/location_map.html", {
+        "latitude": profile.latitude,
+        "longitude": profile.longitude
+    })

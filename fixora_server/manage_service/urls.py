@@ -36,4 +36,6 @@ urlpatterns = [
     # =========================
     # LOCATION
     # =========================
+    path('api/save-location/', views.save_location, name='save_location'),
+    path('location-map/', views.location_map, name='location_map'),
 ]
