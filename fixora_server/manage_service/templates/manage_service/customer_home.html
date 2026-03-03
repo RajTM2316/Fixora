@@ -218,7 +218,7 @@
                         class="flex-1 md:flex-none bg-brand-dark text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md tap-effect hover:bg-gray-800 transition text-center">
                         Track Pro
                     </a>
-                    <a href="/chat/{{ active_booking.id }}/"
+                    <a href="{% url 'chat:direct_chat' active_booking.id %}"
                         class="w-12 bg-white text-brand-dark flex items-center justify-center rounded-xl border border-gray-200 shadow-sm tap-effect hover:border-brand-action hover:text-brand-action transition">
                         <i class="fa-solid fa-comment-dots text-lg"></i>
                     </a>

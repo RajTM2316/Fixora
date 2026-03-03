@@ -100,7 +100,7 @@
             <div class="flex flex-col sm:flex-row gap-3">
 
                 <!-- Chat -->
-                <a href="{% url 'chat' active_job.id %}"
+                <a href="{% url 'chat:direct_chat' active_job.id %}"
                    class="bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-3 rounded-xl font-semibold flex items-center gap-2">
                     <i class="fa-solid fa-comment-dots"></i>
                     Open Chat

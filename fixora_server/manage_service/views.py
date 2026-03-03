@@ -242,11 +242,38 @@ def create_request(request):
         "categories": categories
     })
 
+from django.db import transaction
+
 @login_required
 def accept_request(request, request_id):
-    service_request = get_object_or_404(ServiceRequest, id=request_id)
-    service_request.status = "Accepted"
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "provider":
+        return HttpResponseForbidden("Access denied.")
+
+    has_active_job = ServiceRequest.objects.filter(
+        provider_service__provider=profile,
+        status="ACCEPTED"
+    ).exists()
+
+    if has_active_job:
+        messages.error(request, "You already have an active job.")
+        return redirect("provider_dashboard")
+
+    service_request = ServiceRequest.objects.filter(
+        id=request_id,
+        provider_service__provider=profile,
+        status="PENDING"
+    ).first()
+
+    if not service_request:
+        messages.error(request, "Invalid or already processed request.")
+        return redirect("provider_dashboard")
+
+    service_request.status = "ACCEPTED"
     service_request.save()
+
+    messages.success(request, "Request accepted successfully.")
     return redirect("provider_dashboard")
 @login_required
 def reject_request(request, request_id):
