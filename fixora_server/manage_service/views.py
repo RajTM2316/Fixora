@@ -3,11 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-from .models import Category, ServiceRequest , ServiceRequestImage
-from manage_user.models import Profile
-from manage_service.models import ProviderService
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import Category
+from django.db import transaction
+
+from .models import Category, ServiceRequest, ServiceRequestImage, ProviderService
+from .forms import ServiceForm
+from manage_user.models import Profile
+
+
 # =========================
 # PROVIDER DASHBOARD
 # =========================
@@ -21,7 +24,6 @@ def provider_dashboard(request):
 
     provider_services = ProviderService.objects.filter(provider=profile)
 
-    # Incoming PENDING requests
     incoming_requests = ServiceRequest.objects.filter(
         provider_service__provider=profile,
         status="PENDING"
@@ -30,48 +32,23 @@ def provider_dashboard(request):
         "provider_service__service"
     ).order_by("-request_date")
 
-    # Active job
     active_job = ServiceRequest.objects.filter(
         provider_service__provider=profile,
         status="ACCEPTED"
     ).first()
 
-    # Completed jobs
     job_history = ServiceRequest.objects.filter(
         provider_service__provider=profile,
         status="COMPLETED"
     ).order_by("-request_date")
 
-    return render(request, "manage_service/provider_dashboard.html", {
+    return render(request, "provider/provider_dashboard.html", {
         "profile": profile,
         "provider_services": provider_services,
         "incoming_requests": incoming_requests,
         "active_job": active_job,
         "job_history": job_history,
     })
-
-
-# =========================
-# TOGGLE SERVICE AVAILABILITY
-# =========================
-@login_required
-def toggle_service_availability(request, service_id):
-    profile = get_object_or_404(Profile, user=request.user)
-
-    if profile.role != "provider":
-        return HttpResponseForbidden("Access denied.")
-
-    if request.method == "POST":
-        provider_service = get_object_or_404(
-            ProviderService,
-            id=service_id,
-            provider=profile
-        )
-
-        provider_service.is_available = bool(request.POST.get("is_available"))
-        provider_service.save()
-
-    return redirect("provider_dashboard")
 
 
 # =========================
@@ -87,53 +64,14 @@ def customer_home(request):
 
     categories = Category.objects.filter(is_active=True)
 
-    return render(request, "manage_service/customer_home.html", {
-        "categories": categories
-    })
+    active_booking = ServiceRequest.objects.filter(
+        customer=profile,
+        status__in=["PENDING", "ACCEPTED"]
+    ).first()
 
-
-# =========================
-# ADD CATEGORY (ADMIN ONLY)
-# =========================
-@staff_member_required
-def add_category(request):
-    if request.method == "POST":
-        name = request.POST.get("name")
-        description = request.POST.get("description")
-        image = request.FILES.get("image")
-        is_active = bool(request.POST.get("is_active"))
-        estimated_time = request.POST.get("estimated_time")
-        estimated_price = request.POST.get("estimated_price")
-
-        if Category.objects.filter(name=name).exists():
-            messages.error(request, "Category with this name already exists.")
-            return redirect("add_category")
-
-        Category.objects.create(
-            name=name,
-            description=description,
-            image=image,
-            is_active=is_active,
-            estimated_time=estimated_time,
-            estimated_price=estimated_price
-        )
-
-        messages.success(request, "Category added successfully.")
-        return redirect("add_category")
-
-    return render(request, "manage_service/add_category.html")
-
-
-# =========================
-# LOCATION MAP
-# =========================
-@login_required
-def location_map(request):
-    profile = get_object_or_404(Profile, user=request.user)
-
-    return render(request, "manage_service/location_map.html", {
-        "latitude": profile.latitude,
-        "longitude": profile.longitude
+    return render(request, "customer/customer_home.html", {
+        "categories": categories,
+        "active_booking": active_booking
     })
 
 
@@ -150,52 +88,56 @@ def my_bookings(request):
     bookings = ServiceRequest.objects.filter(
         customer=profile
     ).select_related(
-        "provider_service__service__category",
-        "provider_service__provider"
+        "provider_service__service",
+        "provider_service__provider__user"
     ).order_by("-request_date")
 
-    return render(request, "manage_service/my_bookings.html", {
+    return render(request, "customer/my_bookings.html", {
         "bookings": bookings
     })
 
-# =========================
-# SERVICE VIEW 
-# ========================= 
 
+# =========================
+# SERVICE LISTING
+# =========================
 def service_view(request):
     category_id = request.GET.get("category")
+
     provider_services = ProviderService.objects.filter(
         is_available=True
     ).select_related("service", "provider__user")
+
     selected_category = None
-    categories= Category.objects.filter(is_active=True)
+    categories = Category.objects.filter(is_active=True)
+
     if category_id:
         provider_services = provider_services.filter(service__category_id=category_id)
         selected_category = Category.objects.filter(id=category_id).first()
 
-    return render(request, "manage_service/service.html", {
+    return render(request, "services/service.html", {
         "provider_services": provider_services,
         "selected_category": selected_category,
         "categories": categories
     })
 
+
+# =========================
+# CREATE SERVICE REQUEST
+# =========================
 @login_required
+@transaction.atomic
 def create_request(request):
     profile = get_object_or_404(Profile, user=request.user)
 
-    # Only customers allowed
     if profile.role != "customer":
-        return redirect("customer_home")
+        return redirect("manage_service:customer_home")
 
-    # Prevent multiple active bookings
-    active_request = ServiceRequest.objects.filter(
+    if ServiceRequest.objects.filter(
         customer=profile,
         status__in=["PENDING", "ACCEPTED"]
-    ).exists()
-
-    if active_request:
+    ).exists():
         messages.error(request, "You already have an active booking.")
-        return redirect("my_bookings")
+        return redirect("manage_service:my_bookings")
 
     categories = Category.objects.filter(is_active=True)
 
@@ -206,19 +148,17 @@ def create_request(request):
 
         if not category_id or not address:
             messages.error(request, "Please fill all required fields.")
-            return redirect("create_request")
+            return redirect("manage_service:create_request")
 
-        # Find available provider for selected category
         provider_service = ProviderService.objects.filter(
             service__category_id=category_id,
             is_available=True
         ).select_related("provider", "service").first()
 
         if not provider_service:
-            messages.error(request, "No providers available for this category right now.")
-            return redirect("create_request")
+            messages.error(request, "No providers available right now.")
+            return redirect("manage_service:create_request")
 
-        # Create Service Request
         service_request = ServiceRequest.objects.create(
             customer=profile,
             provider_service=provider_service,
@@ -227,23 +167,98 @@ def create_request(request):
             status="PENDING"
         )
 
-        # Save uploaded images (multiple)
-        images = request.FILES.getlist("images")
-        for img in images:
+        for img in request.FILES.getlist("images"):
             ServiceRequestImage.objects.create(
                 request=service_request,
                 image=img
             )
 
         messages.success(request, "Service request created successfully.")
-        return redirect("my_bookings")
+        return redirect("manage_service:my_bookings")
 
-    return render(request, "manage_service/create_service_request.html", {
+    return render(request, "services/create_service_request.html", {
         "categories": categories
     })
 
-from django.db import transaction
 
+# =========================
+# BOOK SERVICE
+# =========================
+@login_required
+@transaction.atomic
+def book_service(request, ps_id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "customer":
+        return HttpResponseForbidden("Access denied.")
+
+    provider_service = get_object_or_404(
+        ProviderService.objects.select_related("provider__user", "service"),
+        id=ps_id,
+        is_available=True
+    )
+
+    if ServiceRequest.objects.filter(
+        customer=profile,
+        status__in=["PENDING", "ACCEPTED"]
+    ).exists():
+        messages.error(request, "You already have an active booking.")
+        return redirect("manage_service:my_bookings")
+
+    if request.method == "POST":
+        address = request.POST.get("address")
+        description = request.POST.get("description")
+
+        if not address:
+            messages.error(request, "Address is required.")
+            return redirect("manage_service:book_service", ps_id=ps_id)
+
+        service_request = ServiceRequest.objects.create(
+            customer=profile,
+            provider_service=provider_service,
+            address_text=address,
+            problem_description=description,
+            status="PENDING"
+        )
+
+        for img in request.FILES.getlist("images"):
+            ServiceRequestImage.objects.create(
+                request=service_request,
+                image=img
+            )
+
+        messages.success(request, "Booking placed successfully.")
+        return redirect("manage_service:my_bookings")
+
+    return render(request, "services/book_service.html", {
+        "provider_service": provider_service
+    })
+
+
+# =========================
+# BOOKING DETAIL
+# =========================
+@login_required
+def booking_detail(request, booking_id):
+    profile = get_object_or_404(Profile, user=request.user)
+
+    if profile.role != "customer":
+        return HttpResponseForbidden("Access denied.")
+
+    booking = get_object_or_404(
+        ServiceRequest,
+        id=booking_id,
+        customer=profile
+    )
+
+    return render(request, "services/booking_detail.html", {
+        "booking": booking
+    })
+
+
+# =========================
+# PROVIDER ACTIONS
+# =========================
 @login_required
 def accept_request(request, request_id):
     profile = get_object_or_404(Profile, user=request.user)
@@ -251,14 +266,12 @@ def accept_request(request, request_id):
     if profile.role != "provider":
         return HttpResponseForbidden("Access denied.")
 
-    has_active_job = ServiceRequest.objects.filter(
+    if ServiceRequest.objects.filter(
         provider_service__provider=profile,
         status="ACCEPTED"
-    ).exists()
-
-    if has_active_job:
+    ).exists():
         messages.error(request, "You already have an active job.")
-        return redirect("provider_dashboard")
+        return redirect("manage_service:provider_dashboard")
 
     service_request = ServiceRequest.objects.filter(
         id=request_id,
@@ -267,14 +280,16 @@ def accept_request(request, request_id):
     ).first()
 
     if not service_request:
-        messages.error(request, "Invalid or already processed request.")
-        return redirect("provider_dashboard")
+        messages.error(request, "Invalid request.")
+        return redirect("manage_service:provider_dashboard")
 
     service_request.status = "ACCEPTED"
     service_request.save()
 
     messages.success(request, "Request accepted successfully.")
-    return redirect("provider_dashboard")
+    return redirect("manage_service:provider_dashboard")
+
+
 @login_required
 def reject_request(request, request_id):
     profile = get_object_or_404(Profile, user=request.user)
@@ -291,7 +306,9 @@ def reject_request(request, request_id):
     service_request.status = "REJECTED"
     service_request.save()
 
-    return redirect("provider_dashboard")
+    return redirect("manage_service:provider_dashboard")
+
+
 @login_required
 def complete_request(request, request_id):
     profile = get_object_or_404(Profile, user=request.user)
@@ -309,36 +326,54 @@ def complete_request(request, request_id):
     service_request.status = "COMPLETED"
     service_request.save()
 
-    return redirect("provider_dashboard")
+    return redirect("manage_service:provider_dashboard")
+
 
 # =========================
-#Add Service View
+# ADD CATEGORY (ADMIN)
 # =========================
-from .forms import ServiceForm
-from .models import ProviderService
+@staff_member_required
+def add_category(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+
+        if Category.objects.filter(name=name).exists():
+            messages.error(request, "Category already exists.")
+            return redirect("manage_service:add_category")
+
+        Category.objects.create(
+            name=name,
+            description=request.POST.get("description"),
+            image=request.FILES.get("image"),
+            is_active=True,
+            estimated_time=request.POST.get("estimated_time"),
+            estimated_price=request.POST.get("estimated_price"),
+        )
+
+        messages.success(request, "Category added successfully.")
+        return redirect("manage_service:add_category")
+
+    return render(request, "admin/add_category.html")
 
 
+# =========================
+# ADD SERVICE (PROVIDER)
+# =========================
+@login_required
 def add_service(request):
-    # Make sure user is logged in
-    if not request.user.is_authenticated:
-        return redirect("login")
+    profile = get_object_or_404(Profile, user=request.user)
 
-    profile = request.user.profile
-
-    # Allow only providers
     if profile.role != "provider":
         return HttpResponseForbidden("Access denied.")
 
     if request.method == "POST":
-        form = ServiceForm(request.POST, request.FILES)  
+        form = ServiceForm(request.POST, request.FILES)
+
         if form.is_valid():
             service = form.save(commit=False)
-
-            # Automatically set category from provider profile
             service.category = profile.category
             service.save()
 
-            # Create ProviderService entry
             ProviderService.objects.create(
                 provider=profile,
                 service=service,
@@ -346,81 +381,24 @@ def add_service(request):
             )
 
             messages.success(request, "Service created successfully.")
-            return redirect("provider_dashboard")
+            return redirect("manage_service:provider_dashboard")
 
     else:
         form = ServiceForm()
 
-    return render(request, "manage_service/add_service.html", {
+    return render(request, "admin/add_service.html", {
         "form": form
     })
+
+
+# =========================
+# LOCATION MAP
+# =========================
 @login_required
-def booking_detail(request, booking_id):
+def location_map(request):
     profile = get_object_or_404(Profile, user=request.user)
 
-    if profile.role != "customer":
-        return HttpResponseForbidden("Access denied.")
-
-    booking = get_object_or_404(
-        ServiceRequest,
-        id=booking_id,
-        customer=profile
-    )
-
-    return render(request, "manage_service/booking_detail.html", {
-        "booking": booking
-    })
-@login_required
-def book_service(request, ps_id):
-    profile = get_object_or_404(Profile, user=request.user)
-
-    # Only customers allowed
-    if profile.role != "customer":
-        return HttpResponseForbidden("Access denied.")
-
-    provider_service = get_object_or_404(
-        ProviderService.objects.select_related("provider__user", "service"),
-        id=ps_id,
-        is_available=True
-    )
-
-    # Prevent multiple active bookings
-    active_request = ServiceRequest.objects.filter(
-        customer=profile,
-        status__in=["PENDING", "ACCEPTED"]
-    ).exists()
-
-    if active_request:
-        messages.error(request, "You already have an active booking.")
-        return redirect("my_bookings")
-
-    if request.method == "POST":
-        address = request.POST.get("address")
-        description = request.POST.get("description")
-
-        if not address:
-            messages.error(request, "Address is required.")
-            return redirect("book_service", ps_id=ps_id)
-
-        service_request = ServiceRequest.objects.create(
-            customer=profile,
-            provider_service=provider_service,
-            address_text=address,
-            problem_description=description,
-            status="PENDING"
-        )
-
-        # Save multiple uploaded images
-        images = request.FILES.getlist("images")
-        for img in images:
-            ServiceRequestImage.objects.create(
-                request=service_request,
-                image=img
-            )
-
-        messages.success(request, "Booking placed successfully.")
-        return redirect("my_bookings")
-
-    return render(request, "manage_service/book_service.html", {
-        "provider_service": provider_service
+    return render(request, "standalone/location_map.html", {
+        "latitude": profile.latitude,
+        "longitude": profile.longitude
     })

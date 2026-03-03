@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Fixora | Booking Details{% endblock %}
+
+{% block extra_css %}
+<style>
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="bg-brand-surface text-slate-800 py-10 px-4 sm:px-6 min-h-screen">
+    <div class="max-w-3xl mx-auto">
+
+        <!-- BACK -->
+        <a href="javascript:history.back()"
+           class="inline-flex items-center gap-2 text-gray-500 hover:text-brand-action transition-colors font-medium mb-6 tap-effect">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+
+        <!-- CARD -->
+        <div class="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden">
+
+            <!-- HEADER -->
+            <div class="p-6 sm:p-8 border-b border-gray-50 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-indigo-50 text-brand-action rounded-2xl flex items-center justify-center text-xl shadow-inner border border-indigo-100">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+
+                    <div>
+                        <h1 class="text-2xl font-bold text-brand-dark leading-tight">
+                            {{ booking.provider_service.service.name }}
+                        </h1>
+                        <p class="text-xs text-gray-500 mt-1 font-medium tracking-wide uppercase">
+                            Booking Overview
+                        </p>
+                    </div>
+                </div>
+
+                <!-- STATUS BADGE -->
+                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-bold text-xs uppercase tracking-wider
+                    {% if booking.status == 'COMPLETED' %} bg-emerald-50 text-emerald-600 border-emerald-100
+                    {% elif booking.status == 'PENDING' %} bg-gray-100 text-gray-600 border-gray-200
+                    {% elif booking.status == 'ACCEPTED' %} bg-indigo-50 text-brand-action border-indigo-100
+                    {% else %} bg-gray-50 text-gray-500 border-gray-200 {% endif %}">
+
+                    <span class="w-1.5 h-1.5 rounded-full 
+                        {% if booking.status == 'COMPLETED' %} bg-emerald-500
+                        {% elif booking.status == 'PENDING' %} bg-gray-400
+                        {% elif booking.status == 'ACCEPTED' %} bg-brand-action animate-pulse
+                        {% else %} bg-gray-400 {% endif %}">
+                    </span>
+
+                    {{ booking.status }}
+                </div>
+            </div>
+
+            <!-- DETAILS -->
+            <div class="p-6 sm:p-8">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+                    <!-- PROVIDER -->
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1 text-gray-400">
+                            <i class="fa-solid fa-user-tie w-5 text-center"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                                Provider
+                            </p>
+                            <p class="font-semibold text-brand-dark">
+                                {{ booking.provider_service.provider.user.username }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- DATE -->
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1 text-gray-400">
+                            <i class="fa-solid fa-calendar-day w-5 text-center"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                                Requested On
+                            </p>
+                            <p class="font-semibold text-brand-dark">
+                                {{ booking.request_date }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ADDRESS -->
+                    <div class="flex items-start gap-3 md:col-span-2 bg-gray-50/80 p-4 rounded-xl border border-gray-100">
+                        <div class="mt-0.5 text-brand-action">
+                            <i class="fa-solid fa-location-dot w-5 text-center"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                Service Address
+                            </p>
+                            <p class="text-sm font-medium text-gray-700 leading-relaxed">
+                                {{ booking.address_text }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    {% if booking.problem_description %}
+                    <div class="flex items-start gap-3 md:col-span-2 bg-gray-50/80 p-4 rounded-xl border border-gray-100">
+                        <div class="mt-0.5 text-brand-action">
+                            <i class="fa-solid fa-circle-info w-5 text-center"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                Problem Description
+                            </p>
+                            <p class="text-sm font-medium text-gray-700 leading-relaxed italic">
+                                {{ booking.problem_description }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row gap-4 justify-end">
+
+                    {% if booking.status == "ACCEPTED" %}
+                    <a href="{% url 'chat:direct_chat' booking.id %}"
+                       class="bg-brand-action hover:bg-indigo-700 text-white px-8 py-3.5 rounded-xl font-bold shadow-md shadow-indigo-200 transition-all tap-effect flex items-center justify-center gap-2 w-full sm:w-auto">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        Chat with Provider
+                    </a>
+                    {% endif %}
+
+                    {% if booking.status == "COMPLETED" %}
+                    <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 w-full sm:w-auto">
+                        <i class="fa-solid fa-circle-check"></i>
+                        Service Completed Successfully
+                    </div>
+                    {% endif %}
+
+                    {% if booking.status == "PENDING" %}
+                    <div class="bg-blue-50 border border-blue-200 text-blue-700 px-6 py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 w-full sm:w-auto">
+                        <i class="fa-solid fa-hourglass-half animate-pulse"></i>
+                        Waiting for provider confirmation
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

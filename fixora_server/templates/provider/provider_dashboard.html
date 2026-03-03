@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Fixora | Provider Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- HEADER -->
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-brand-dark">
+                Dashboard Overview
+            </h1>
+            <p class="text-gray-500 text-sm mt-1">
+                Manage your active jobs, incoming requests, and history.
+            </p>
+        </div>
+
+        <a href="{% url 'manage_service:add_service' %}"
+           class="bg-gradient-to-r from-brand-action to-indigo-600 hover:opacity-90 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg transition-all flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i>
+            Add Service
+        </a>
+    </div>
+
+    <!-- ACTIVE JOB -->
+    {% if active_job %}
+    <section class="mb-8">
+        <div class="bg-gradient-to-r from-brand-action to-indigo-700 rounded-2xl shadow-lg p-8 text-white flex flex-col md:flex-row justify-between gap-6">
+
+            <div>
+                <span class="bg-emerald-400/20 text-emerald-300 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                    Active Job in Progress
+                </span>
+
+                <h2 class="text-3xl font-bold mt-4">
+                    {{ active_job.provider_service.service.name }}
+                </h2>
+
+                <div class="mt-4 space-y-2 text-indigo-100">
+                    <p><i class="fa-solid fa-user mr-2"></i>{{ active_job.customer.user.username }}</p>
+                    <p><i class="fa-solid fa-location-dot mr-2"></i>{{ active_job.address_text|truncatechars:50 }}</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+
+                <!-- CHAT -->
+                <a href="{% url 'chat:direct_chat' active_job.id %}"
+                   class="bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-3 rounded-xl font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-comment-dots"></i>
+                    Open Chat
+                </a>
+
+                <!-- COMPLETE -->
+                <form method="POST" action="{% url 'manage_service:complete_request' active_job.id %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="bg-white text-brand-action px-6 py-3 rounded-xl font-bold shadow-md hover:bg-gray-50 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check"></i>
+                        Mark Completed
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- NEW REQUESTS -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <div class="flex items-center justify-between border-b pb-4">
+                <h2 class="text-lg font-bold text-brand-dark">
+                    New Requests
+                </h2>
+
+                {% if incoming_requests %}
+                <span class="bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-full">
+                    {{ incoming_requests.count }} New
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                {% for request in incoming_requests %}
+                <div class="bg-white rounded-2xl shadow-sm border p-5 flex flex-col">
+
+                    <h3 class="font-bold text-lg">
+                        {{ request.provider_service.service.name }}
+                    </h3>
+
+                    <p class="text-sm text-gray-500 mt-1">
+                        {{ request.customer.user.username }}
+                    </p>
+
+                    <div class="mt-4 space-y-2 text-sm text-gray-600">
+                        <p>
+                            <i class="fa-solid fa-location-dot mr-2 text-brand-action"></i>
+                            {{ request.address_text }}
+                        </p>
+
+                        {% if request.problem_description %}
+                        <p>
+                            <i class="fa-solid fa-circle-info mr-2 text-brand-action"></i>
+                            {{ request.problem_description }}
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="grid grid-cols-2 gap-3 mt-6">
+
+                        <!-- REJECT -->
+                        <form method="POST" action="{% url 'manage_service:reject_request' request.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="w-full py-2.5 rounded-xl border border-gray-300 bg-white text-gray-600 font-semibold text-sm hover:bg-gray-100">
+                                Ignore
+                            </button>
+                        </form>
+
+                        <!-- ACCEPT -->
+                        <form method="POST" action="{% url 'manage_service:accept_request' request.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="w-full py-2.5 rounded-xl bg-brand-dark hover:bg-black text-white font-semibold text-sm shadow-md">
+                                Accept
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+
+                {% empty %}
+                <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-dashed">
+                    <p class="text-gray-500">No pending requests</p>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <!-- JOB HISTORY -->
+        <div>
+            <div class="bg-white rounded-2xl shadow-sm border p-5">
+
+                <h2 class="font-bold text-brand-dark mb-4">
+                    Recent History
+                </h2>
+
+                {% for job in job_history %}
+                <div class="border-b py-4 flex justify-between items-center">
+
+                    <div>
+                        <p class="font-semibold text-sm">
+                            {{ job.provider_service.service.name }}
+                        </p>
+                        <p class="text-xs text-gray-500">
+                            {{ job.customer.user.username }}
+                        </p>
+                    </div>
+
+                    <span class="text-xs font-bold px-2 py-1 rounded
+                        {% if job.status == 'COMPLETED' %}
+                            bg-emerald-50 text-emerald-600
+                        {% elif job.status == 'REJECTED' %}
+                            bg-red-50 text-red-600
+                        {% else %}
+                            bg-gray-100 text-gray-600
+                        {% endif %}">
+                        {{ job.status }}
+                    </span>
+
+                </div>
+                {% empty %}
+                <p class="text-sm text-gray-500 text-center py-8">
+                    No job history found yet.
+                </p>
+                {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

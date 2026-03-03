@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Fixora | My Bookings{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto w-full px-6 pt-8">
+
+    <!-- HEADER -->
+    <header class="mb-8 md:mb-12">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-brand-dark mb-2">
+            My Bookings
+        </h1>
+        <p class="text-gray-500 text-lg">
+            Manage your service history and track ongoing requests.
+        </p>
+    </header>
+
+    <!-- BOOKINGS LIST -->
+    <section class="mb-12">
+
+        {% if bookings %}
+        <div class="grid grid-cols-1 gap-6">
+
+            {% for booking in bookings %}
+            <div class="bg-white p-6 rounded-[24px] shadow border relative flex flex-col md:flex-row md:justify-between">
+
+                <!-- STATUS BAR -->
+                <div class="absolute left-0 top-0 bottom-0 w-2
+                    {% if booking.status == 'PENDING' %}bg-blue-500
+                    {% elif booking.status == 'ACCEPTED' %}bg-green-500
+                    {% elif booking.status == 'COMPLETED' %}bg-gray-500
+                    {% elif booking.status == 'REJECTED' %}bg-red-500
+                    {% else %}bg-brand-action{% endif %}">
+                </div>
+
+                <!-- INFO -->
+                <div class="mb-4 md:mb-0 pl-4 md:flex-grow">
+
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase
+                            {% if booking.status == 'PENDING' %}bg-blue-100 text-blue-700
+                            {% elif booking.status == 'ACCEPTED' %}bg-green-100 text-green-700
+                            {% elif booking.status == 'COMPLETED' %}bg-gray-100 text-gray-700
+                            {% elif booking.status == 'REJECTED' %}bg-red-100 text-red-700
+                            {% endif %}">
+                            {{ booking.status }}
+                        </span>
+
+                        <span class="text-gray-400 text-xs font-bold">
+                            {{ booking.request_date|date:"M d, Y" }}
+                        </span>
+                    </div>
+
+                    <h3 class="font-bold text-brand-dark text-xl mb-1">
+                        {{ booking.provider_service.service.name }}
+                    </h3>
+
+                    <p class="text-gray-500 text-sm">
+                        Provider: {{ booking.provider_service.provider.user.username }}
+                    </p>
+
+                    <p class="text-gray-500 text-sm">
+                        Location: {{ booking.address_text }}
+                    </p>
+
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
+
+                    {% if booking.status == 'ACCEPTED' %}
+                    <a href="{% url 'chat:direct_chat' booking.id %}"
+                       class="bg-white text-brand-dark border border-gray-200 px-6 py-3 rounded-xl font-semibold hover:border-brand-action transition text-center">
+                        Chat
+                    </a>
+                    {% endif %}
+
+                    <a href="{% url 'manage_service:booking_detail' booking.id %}"
+                       class="bg-brand-action text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-dark transition text-center">
+                        View Details
+                    </a>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        {% else %}
+        <div class="py-12 text-center bg-gray-50 rounded-[24px] border-2 border-dashed border-gray-200">
+            <p class="text-gray-400 font-bold">
+                You haven't made any bookings yet.
+            </p>
+
+            <a href="{% url 'manage_service:service_view' %}"
+               class="mt-4 inline-block bg-brand-action text-white px-6 py-3 rounded-xl font-bold">
+                Browse Services
+            </a>
+        </div>
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

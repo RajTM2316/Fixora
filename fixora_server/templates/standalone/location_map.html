@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Fixora | Live Location{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+#map {
+    width: 100%;
+    height: 80vh;
+    border-radius: 20px;
+}
+
+.bottom-sheet {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto py-10 px-6">
+
+    <h1 class="text-3xl font-bold text-brand-dark mb-6">
+        Live Location
+    </h1>
+
+    <div id="map"></div>
+
+    <div id="data-sheet" class="bottom-sheet mt-6 hidden">
+        <div class="grid grid-cols-2 gap-6 mb-6">
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase">Latitude</p>
+                <p id="lat-val" class="font-bold text-lg text-brand-dark"></p>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase">Longitude</p>
+                <p id="lng-val" class="font-bold text-lg text-brand-dark"></p>
+            </div>
+        </div>
+
+        <button onclick="shareLocation()"
+            class="bg-brand-action hover:bg-brand-dark text-white px-6 py-3 rounded-xl font-semibold">
+            Share Location
+        </button>
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+let lat = "{{ latitude|default:'' }}";
+let lng = "{{ longitude|default:'' }}";
+
+if (lat && lng) {
+    lat = parseFloat(lat);
+    lng = parseFloat(lng);
+
+    document.getElementById("data-sheet").classList.remove("hidden");
+    document.getElementById("lat-val").innerText = lat.toFixed(5);
+    document.getElementById("lng-val").innerText = lng.toFixed(5);
+
+    const map = L.map("map").setView([lat, lng], 14);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+    }).addTo(map);
+
+    L.marker([lat, lng]).addTo(map);
+}
+
+function shareLocation() {
+    const url = `https://www.google.com/maps?q=${lat},${lng}`;
+    if (navigator.share) {
+        navigator.share({
+            title: "My Location",
+            url: url
+        });
+    } else {
+        navigator.clipboard.writeText(url);
+        alert("Location link copied!");
+    }
+}
+</script>
+
+{% endblock %}

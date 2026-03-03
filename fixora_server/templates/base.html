@@ -1,16 +1,13 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Fixora{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Tailwind CDN -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Fixora Color Theme -->
     <script>
         tailwind.config = {
             theme: {
@@ -19,14 +16,10 @@
                         brand: {
                             dark: '#0f172a',
                             primary: '#0066ff',
-                            'primary-dark': '#0052cc',
                             action: '#4f46e5',
-                            'action-light': '#6366f1',
-                            accent: '#06b6d4',
                             success: '#10b981',
-                            warning: '#f59e0b',
-                            surface: '#f8fafc',
-                            'surface-alt': '#f1f5f9'
+                            danger: '#ef4444',
+                            surface: '#f8fafc'
                         }
                     }
                 }
@@ -34,21 +27,107 @@
         }
     </script>
 
-    <!-- Optional custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Global Styles -->
+    <style>
+        .tap-effect:active { transform: scale(0.96); }
+
+        .card-interactive {
+            transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .card-interactive:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px -5px rgba(79,70,229,0.15);
+        }
+
+        .glass-panel {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(12px);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 
-<body class="bg-brand-surface text-gray-800 min-h-screen flex flex-col">
+<body class="bg-brand-surface min-h-screen flex flex-col">
 
-    <!-- Main Content -->
+    <!-- Only show navbar when logged in -->
+    {% if request.user.is_authenticated %}
+        {% include "partials/navbar.html" %}
+    {% endif %}
+
     <main class="flex-grow">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
-    {% block extra_js %}{% endblock %}
-</body>
+    {% include "partials/footer.html" %}
 
+    <!-- Only show mobile nav when logged in -->
+    {% if request.user.is_authenticated %}
+        {% include "partials/mobile_nav.html" %}
+    {% endif %}
+
+    <!-- Global JS -->
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(sendPosition, showError);
+            } else {
+                alert("Geolocation is not supported.");
+            }
+        }
+
+        function sendPosition(position) {
+            fetch("/manage_service/api/save-location/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    window.location.href = "/manage_service/location-map/";
+                }
+            });
+        }
+
+        function showError() {
+            alert("Please allow location access.");
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+
+</body>
 </html>

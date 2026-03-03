@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Fixora | Browse Services{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-6 py-8">
+
+    <header class="mb-10">
+        <nav class="flex text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">
+            <a href="{% url 'manage_service:customer_home' %}"
+               class="hover:text-brand-action transition">Home</a>
+            <span class="mx-2">/</span>
+            <span class="text-brand-dark">Services</span>
+        </nav>
+
+        <h1 class="text-3xl md:text-4xl font-extrabold text-brand-dark">
+            {% if selected_category %}
+                Expert <span class="text-brand-action">{{ selected_category.name }}</span> Pros
+            {% else %}
+                Find the <span class="text-brand-action">Right Expert</span>
+            {% endif %}
+        </h1>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+
+        <aside class="hidden lg:block w-64">
+            <div class="bg-white p-6 rounded-[24px] border shadow-sm sticky top-24">
+                <h3 class="font-bold text-brand-dark mb-4">Categories</h3>
+
+                <div class="space-y-2">
+                    {% for cat in categories %}
+                    <a href="?category={{ cat.id }}"
+                       class="block px-4 py-2 rounded-xl text-sm font-bold transition
+                       {% if selected_category and selected_category.id == cat.id %}
+                            bg-brand-action text-white
+                       {% else %}
+                            text-gray-500 hover:bg-indigo-50 hover:text-brand-action
+                       {% endif %}">
+                        {{ cat.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-grow">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+                {% for ps in provider_services %}
+                <article class="bg-white rounded-[28px] border shadow-sm overflow-hidden flex flex-col">
+
+                    {% if ps.service.service_image %}
+                        <img src="{{ ps.service.service_image.url }}" class="w-full h-44 object-cover">
+                    {% endif %}
+
+                    <div class="p-6 flex-grow">
+                        <h3 class="text-xl font-bold text-brand-dark mb-2">
+                            {{ ps.service.name }}
+                        </h3>
+
+                        <p class="text-gray-400 text-xs">
+                            {{ ps.service.description|default:"Professional service." }}
+                        </p>
+                    </div>
+
+                    <div class="px-6 py-6 border-t flex items-center justify-between">
+
+                        <p class="text-lg font-black text-brand-dark">
+                            ₹{{ ps.price|default:ps.service.base_price|default:"599" }}
+                        </p>
+
+                        <a href="{% url 'manage_service:book_service' ps.id %}"
+                           class="bg-brand-action text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-dark transition">
+                            Book Now
+                        </a>
+
+                    </div>
+                </article>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
