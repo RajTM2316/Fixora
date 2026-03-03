@@ -36,5 +36,4 @@ urlpatterns = [
     # =========================
     # LOCATION
     # =========================
-    path("location-map/", views.location_map, name="location_map"),
 ]

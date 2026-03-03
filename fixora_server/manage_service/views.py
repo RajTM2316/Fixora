@@ -394,11 +394,3 @@ def add_service(request):
 # =========================
 # LOCATION MAP
 # =========================
-@login_required
-def location_map(request):
-    profile = get_object_or_404(Profile, user=request.user)
-
-    return render(request, "standalone/location_map.html", {
-        "latitude": profile.latitude,
-        "longitude": profile.longitude
-    })
