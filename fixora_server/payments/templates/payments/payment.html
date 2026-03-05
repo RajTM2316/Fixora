@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fixora Payment</title>
+</head>
+
+<body style="text-align:center; margin-top:100px; font-family:Arial;">
+
+<h2>Fixora Secure Payment</h2>
+
+<button id="pay-btn">Pay ₹500</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+var options = {
+
+    key: "{{ key }}",
+
+    amount: "{{ order.amount }}",
+
+    currency: "INR",
+
+    name: "Fixora",
+
+    description: "Service Payment",
+
+    order_id: "{{ order.id }}",
+
+    handler: function (response) {
+
+        var form = document.createElement("form");
+
+        form.method = "POST";
+
+        form.action = "/payments/success/";
+
+        var csrfToken = "{{ csrf_token }}";
+
+        var csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "csrfmiddlewaretoken";
+        csrfInput.value = csrfToken;
+
+        var paymentInput = document.createElement("input");
+        paymentInput.type = "hidden";
+        paymentInput.name = "razorpay_payment_id";
+        paymentInput.value = response.razorpay_payment_id;
+
+        var orderInput = document.createElement("input");
+        orderInput.type = "hidden";
+        orderInput.name = "razorpay_order_id";
+        orderInput.value = response.razorpay_order_id;
+
+        var signatureInput = document.createElement("input");
+        signatureInput.type = "hidden";
+        signatureInput.name = "razorpay_signature";
+        signatureInput.value = response.razorpay_signature;
+
+        form.appendChild(csrfInput);
+        form.appendChild(paymentInput);
+        form.appendChild(orderInput);
+        form.appendChild(signatureInput);
+
+        document.body.appendChild(form);
+
+        form.submit();
+    }
+
+};
+
+var rzp = new Razorpay(options);
+
+document.getElementById("pay-btn").onclick = function(e) {
+
+    rzp.open();
+
+    e.preventDefault();
+}
+
+</script>
+
+</body>
+</html>
