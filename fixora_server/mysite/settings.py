@@ -1,6 +1,9 @@
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -8,9 +11,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # =========================
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-key")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
-DEBUG = True  # Set False in production
+DEBUG = os.getenv("DEBUG") == "True"
 
 ALLOWED_HOSTS = []
 
@@ -152,3 +155,6 @@ CHANNEL_LAYERS = {
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 3600  # 1 hour
+
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
