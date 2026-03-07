@@ -7,17 +7,16 @@
 
     <header class="mb-10">
         <nav class="flex text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">
-            <a href="{% url 'manage_service:customer_home' %}"
-               class="hover:text-brand-action transition">Home</a>
+            <a href="{% url 'manage_service:customer_home' %}" class="hover:text-brand-action transition">Home</a>
             <span class="mx-2">/</span>
             <span class="text-brand-dark">Services</span>
         </nav>
 
         <h1 class="text-3xl md:text-4xl font-extrabold text-brand-dark">
             {% if selected_category %}
-                Expert <span class="text-brand-action">{{ selected_category.name }}</span> Pros
+            Expert <span class="text-brand-action">{{ selected_category.name }}</span> Pros
             {% else %}
-                Find the <span class="text-brand-action">Right Expert</span>
+            Find the <span class="text-brand-action">Right Expert</span>
             {% endif %}
         </h1>
     </header>
@@ -30,8 +29,7 @@
 
                 <div class="space-y-2">
                     {% for cat in categories %}
-                    <a href="?category={{ cat.id }}"
-                       class="block px-4 py-2 rounded-xl text-sm font-bold transition
+                    <a href="?category={{ cat.id }}" class="block px-4 py-2 rounded-xl text-sm font-bold transition
                        {% if selected_category and selected_category.id == cat.id %}
                             bg-brand-action text-white
                        {% else %}
@@ -50,9 +48,7 @@
                 {% for ps in provider_services %}
                 <article class="bg-white rounded-[28px] border shadow-sm overflow-hidden flex flex-col">
 
-                    {% if ps.service.service_image %}
-                        <img src="{{ ps.service.service_image.url }}" class="w-full h-44 object-cover">
-                    {% endif %}
+                    <img src="{{ ps.service.service_image.url }}" class="w-full h-44 object-cover">
 
                     <div class="p-6 flex-grow">
                         <h3 class="text-xl font-bold text-brand-dark mb-2">
@@ -71,7 +67,7 @@
                         </p>
 
                         <a href="{% url 'manage_service:book_service' ps.id %}"
-                           class="bg-brand-action text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-dark transition">
+                            class="bg-brand-action text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-dark transition">
                             Book Now
                         </a>
 
@@ -85,5 +81,5 @@
 
 </div>
 <!-- Global Footer -->
-    {% include "partials/footer.html" %}
+{% include "partials/footer.html" %}
 {% endblock %}
