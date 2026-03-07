@@ -61,6 +61,8 @@ class ServiceRequest(models.Model):
         choices=STATUS_CHOICES,
         default="PENDING"
     )
+    feedback_given = models.BooleanField(default=False)
+    payment_done = models.BooleanField(default=False)
 
     request_date = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
