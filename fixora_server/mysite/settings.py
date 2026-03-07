@@ -18,6 +18,12 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG") == "True"
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://api.razorpay.com",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
+
 ALLOWED_HOSTS = []
 
 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Fixora Secure Payment</title>
+</head>
+
+<body style="text-align:center; margin-top:100px; font-family:Arial;">
+
+<h2>Fixora Secure Payment</h2>
+
+<button id="pay-btn">Pay ₹500</button>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+var options = {
+
+    "key": "{{ key }}",
+
+    "amount": "{{ order.amount }}",
+
+    "currency": "INR",
+
+    "name": "Fixora",
+
+    "description": "Service Payment",
+
+    "order_id": "{{ order.id }}",
+
+    "callback_url": "http://127.0.0.1:8000/payments/success/",
+
+    "redirect": true
+
+};
+
+var rzp = new Razorpay(options);
+
+document.getElementById("pay-btn").addEventListener("click", function(e) {
+
+    rzp.open();
+
+    e.preventDefault();
+
+});
+
+</script>
+
+</body>
+</html>
