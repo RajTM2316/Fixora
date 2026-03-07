@@ -38,6 +38,7 @@ urlpatterns = [
     # =========================
     path('api/save-location/', views.save_location, name='save_location'),
     path('location-map/', views.location_map, name='location_map'),
+    path("track/<int:request_id>/", views.track_provider, name="track_provider"),
 
     # =========================
     #Admin Category Activation

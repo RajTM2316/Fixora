@@ -39,28 +39,25 @@
         </div>
 
         <!-- SEARCH -->
-        <form method="GET"
-              action="{% url 'manage_service:service_view' %}"
-              class="relative max-w-2xl mx-auto md:mx-0 tap-effect">
+        <form method="GET" action="{% url 'manage_service:service_view' %}"
+            class="relative max-w-2xl mx-auto md:mx-0 tap-effect">
 
             <div class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
                 <i class="fa-solid fa-magnifying-glass text-lg"></i>
             </div>
 
-            <input type="text"
-                   name="q"
-                   placeholder="What service do you need today?"
-                   class="w-full rounded-[20px] py-4 pl-12 pr-4 bg-white border border-gray-200 shadow-sm focus:ring-2 focus:ring-brand-action focus:border-transparent outline-none font-semibold text-brand-dark placeholder-gray-300 transition-all">
+            <input type="text" name="q" placeholder="What service do you need today?"
+                class="w-full rounded-[20px] py-4 pl-12 pr-4 bg-white border border-gray-200 shadow-sm focus:ring-2 focus:ring-brand-action focus:border-transparent outline-none font-semibold text-brand-dark placeholder-gray-300 transition-all">
 
             <button type="submit"
-                    class="absolute right-2 top-2 bottom-2 bg-brand-action hover:bg-brand-dark text-white px-6 rounded-[14px] font-bold text-sm transition-colors">
+                class="absolute right-2 top-2 bottom-2 bg-brand-action hover:bg-brand-dark text-white px-6 rounded-[14px] font-bold text-sm transition-colors">
                 Search
             </button>
         </form>
 
         <div class="mt-8 text-center md:text-left">
             <a href="{% url 'manage_service:create_request' %}"
-               class="inline-flex items-center gap-3 bg-brand-action hover:bg-brand-dark text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition-all tap-effect">
+                class="inline-flex items-center gap-3 bg-brand-action hover:bg-brand-dark text-white px-8 py-4 rounded-2xl font-bold shadow-lg transition-all tap-effect">
                 <i class="fa-solid fa-bolt"></i>
                 Book Your Provider Now
             </a>
@@ -75,17 +72,19 @@
                 Active Booking
             </h2>
             <a href="{% url 'manage_service:my_bookings' %}"
-               class="text-sm font-bold text-brand-action hover:underline">
+                class="text-sm font-bold text-brand-action hover:underline">
                 View All
             </a>
         </div>
 
-        <div class="bg-white p-6 rounded-[24px] shadow-lg shadow-indigo-100/50 border border-gray-100 relative overflow-hidden md:flex md:items-center md:justify-between">
+        <div
+            class="bg-white p-6 rounded-[24px] shadow-lg shadow-indigo-100/50 border border-gray-100 relative overflow-hidden md:flex md:items-center md:justify-between">
             <div class="absolute left-0 top-0 bottom-0 w-2 bg-brand-action"></div>
 
             <div class="mb-4 md:mb-0 pl-4">
                 <div class="flex items-center gap-3 mb-2">
-                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-2">
+                    <span
+                        class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                         {{ active_booking.status }}
                     </span>
@@ -102,13 +101,13 @@
             </div>
 
             <div class="flex gap-3 pl-4 md:pl-0">
-                <a href="/track/{{ active_booking.id }}/"
-                   class="flex-1 md:flex-none bg-brand-dark text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md tap-effect hover:bg-gray-800 transition text-center">
+                <a href="{% url 'manage_service:track_provider' active_booking.id %}"
+                    class="flex-1 md:flex-none bg-brand-dark text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md tap-effect hover:bg-gray-800 transition text-center">
                     Track Pro
                 </a>
 
                 <a href="{% url 'chat:direct_chat' active_booking.id %}"
-                   class="w-12 bg-white text-brand-dark flex items-center justify-center rounded-xl border border-gray-200 shadow-sm tap-effect hover:border-brand-action hover:text-brand-action transition">
+                    class="w-12 bg-white text-brand-dark flex items-center justify-center rounded-xl border border-gray-200 shadow-sm tap-effect hover:border-brand-action hover:text-brand-action transition">
                     <i class="fa-solid fa-comment-dots text-lg"></i>
                 </a>
             </div>
@@ -122,8 +121,7 @@
             <h2 class="text-2xl font-bold text-brand-dark">
                 Our Services
             </h2>
-            <a href="{% url 'manage_service:service_view' %}"
-               class="text-brand-action font-bold hover:underline">
+            <a href="{% url 'manage_service:service_view' %}" class="text-brand-action font-bold hover:underline">
                 View All
             </a>
         </div>
@@ -131,15 +129,15 @@
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
             {% for category in categories %}
-            <article class="card-interactive bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-xl overflow-hidden flex flex-col h-full relative group">
+            <article
+                class="card-interactive bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-xl overflow-hidden flex flex-col h-full relative group">
 
                 <div class="h-40 overflow-hidden rounded-t-[24px]">
                     {% if category.image %}
-                        <img src="{{ category.image.url }}"
-                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <img src="{{ category.image.url }}"
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                     {% else %}
-                        <img src="/media/category_images/default.jpg"
-                             class="w-full h-full object-cover">
+                    <img src="/media/category_images/default.jpg" class="w-full h-full object-cover">
                     {% endif %}
                 </div>
 
@@ -150,9 +148,9 @@
 
                     <p class="text-gray-400 text-xs mb-4 line-clamp-2">
                         {% if category.description %}
-                            {{ category.description }}
+                        {{ category.description }}
                         {% else %}
-                            Trusted {{ category.name }} services delivered by verified professionals.
+                        Trusted {{ category.name }} services delivered by verified professionals.
                         {% endif %}
                     </p>
 
@@ -181,7 +179,7 @@
                         </div>
 
                         <a href="{% url 'manage_service:service_view' %}?category={{ category.id }}"
-                           class="bg-brand-surface text-brand-action w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-action hover:text-white transition-colors tap-effect">
+                            class="bg-brand-surface text-brand-action w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-action hover:text-white transition-colors tap-effect">
                             <i class="fa-solid fa-plus"></i>
                         </a>
 
@@ -190,7 +188,8 @@
             </article>
 
             {% empty %}
-            <div class="col-span-full py-12 text-center bg-gray-50 rounded-[24px] border-2 border-dashed border-gray-200">
+            <div
+                class="col-span-full py-12 text-center bg-gray-50 rounded-[24px] border-2 border-dashed border-gray-200">
                 <p class="text-gray-400 font-bold">
                     No services available at the moment.
                 </p>
@@ -201,6 +200,6 @@
     </section>
 
 </div>
-    <!-- Global Footer -->
-    {% include "partials/footer.html" %}
+<!-- Global Footer -->
+{% include "partials/footer.html" %}
 {% endblock %}

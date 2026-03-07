@@ -282,6 +282,17 @@ def accept_request(request, request_id):
     if not service_request:
         messages.error(request, "Invalid request.")
         return redirect("manage_service:provider_dashboard")
+    
+    lat=request.GET.get("latitude")
+    lng=request.GET.get("longitude")
+
+    print("Provider Lat:", lat)
+    print("Provider Lng:", lng)
+
+    if lat and lng:
+        profile.latitude = lat
+        profile.longitude = lng
+        profile.save()
 
     service_request.status = "ACCEPTED"
     service_request.save()
@@ -424,7 +435,18 @@ def location_map(request):
         "longitude": profile.longitude
     })
 
+@login_required
+def track_provider(request, request_id):
 
+    service_request = get_object_or_404(ServiceRequest, id=request_id)
+
+    provider_profile = service_request.provider_service.provider
+
+    context = {
+        "provider": provider_profile
+    }
+
+    return render(request, "standalone/track_provider.html", context)
 # =========================
 # ACTIVATE/DEACTIVATE CATEGORY (ADMIN)
 # =========================

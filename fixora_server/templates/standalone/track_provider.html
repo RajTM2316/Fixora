@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Track Provider</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h2>Track Your Service Provider</h2>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+
+        let providerLat = parseFloat("{{ provider.latitude|default:'0' }}");
+        let providerLng = parseFloat("{{ provider.longitude|default:'0' }}");
+
+        console.log("Provider Lat:", providerLat);
+        console.log("Provider Lng:", providerLng);
+
+        var map = L.map('map').setView([providerLat, providerLng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'OpenStreetMap'
+        }).addTo(map);
+
+        L.marker([providerLat, providerLng])
+            .addTo(map)
+            .bindPopup("Service Provider Location")
+            .openPopup();
+
+    </script>
+
+</body>
+
+</html>
