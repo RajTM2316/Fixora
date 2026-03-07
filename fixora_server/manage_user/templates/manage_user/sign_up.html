@@ -3,129 +3,129 @@
 
 {% block extra_css %}
 <style>
-:root {
-    --primary-blue: #2d66f6;
-    --gradient-start: #2d66f6;
-    --gradient-end: #7b3fe4;
-}
+    :root {
+        --primary-blue: #2d66f6;
+        --gradient-start: #2d66f6;
+        --gradient-end: #7b3fe4;
+    }
 
-.signup-wrapper{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    padding:40px 0;
-}
+    .signup-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 40px 0;
+    }
 
-.signup-card{
-    width:100%;
-    max-width:500px;
-    background:#fff;
-    border-radius:30px;
-    overflow:hidden;
-    box-shadow:0 15px 35px rgba(0,0,0,0.1);
-}
+    .signup-card {
+        width: 100%;
+        max-width: 500px;
+        background: #fff;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
 
-.header-section{
-    background:linear-gradient(135deg,var(--gradient-start),var(--gradient-end));
-    padding:35px 30px;
-    text-align:left;
-    color:white;
-}
+    .header-section {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        padding: 35px 30px;
+        text-align: left;
+        color: white;
+    }
 
-.header-section h2{
-    font-weight:800;
-    font-size:2.2rem;
-    margin:0;
-}
+    .header-section h2 {
+        font-weight: 800;
+        font-size: 2.2rem;
+        margin: 0;
+    }
 
-.header-section p{
-    opacity:.9;
-    font-size:.9rem;
-    margin-top:5px;
-}
+    .header-section p {
+        opacity: .9;
+        font-size: .9rem;
+        margin-top: 5px;
+    }
 
-.form-section{
-    padding:30px;
-}
+    .form-section {
+        padding: 30px;
+    }
 
-.role-toggle{
-    display:flex;
-    background:#f1f3f6;
-    border-radius:12px;
-    padding:5px;
-    margin-bottom:25px;
-}
+    .role-toggle {
+        display: flex;
+        background: #f1f3f6;
+        border-radius: 12px;
+        padding: 5px;
+        margin-bottom: 25px;
+    }
 
-.role-btn{
-    flex:1;
-    padding:10px;
-    border:none;
-    background:transparent;
-    font-weight:600;
-    color:#666;
-    border-radius:10px;
-    transition:.3s;
-}
+    .role-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        background: transparent;
+        font-weight: 600;
+        color: #666;
+        border-radius: 10px;
+        transition: .3s;
+    }
 
-.role-btn.active{
-    background:var(--primary-blue);
-    color:white;
-    box-shadow:0 4px 10px rgba(45,102,246,0.3);
-}
+    .role-btn.active {
+        background: var(--primary-blue);
+        color: white;
+        box-shadow: 0 4px 10px rgba(45, 102, 246, 0.3);
+    }
 
-label{
-    font-size:.7rem;
-    font-weight:700;
-    color:#adb5bd;
-    text-transform:uppercase;
-    margin-bottom:5px;
-    display:block;
-}
+    label {
+        font-size: .7rem;
+        font-weight: 700;
+        color: #adb5bd;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        display: block;
+    }
 
-.form-control{
-    border:1px solid #e9ecef;
-    border-radius:12px;
-    padding:10px 15px;
-    margin-bottom:15px;
-    background-color:#fbfbfb;
-    font-size:.9rem;
-}
+    .form-control {
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        background-color: #fbfbfb;
+        font-size: .9rem;
+    }
 
-.section-title{
-    font-size:.85rem;
-    font-weight:800;
-    color:#333;
-    margin:10px 0 15px 0;
-    text-transform:uppercase;
-    border-left:4px solid var(--primary-blue);
-    padding-left:10px;
-}
+    .section-title {
+        font-size: .85rem;
+        font-weight: 800;
+        color: #333;
+        margin: 10px 0 15px 0;
+        text-transform: uppercase;
+        border-left: 4px solid var(--primary-blue);
+        padding-left: 10px;
+    }
 
-.btn-signup{
-    background:linear-gradient(to right,var(--gradient-start),var(--gradient-end));
-    border:none;
-    border-radius:15px;
-    padding:14px;
-    color:white;
-    font-weight:700;
-    width:100%;
-    margin-top:15px;
-    box-shadow:0 6px 20px rgba(45,102,246,0.4);
-}
+    .btn-signup {
+        background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+        border: none;
+        border-radius: 15px;
+        padding: 14px;
+        color: white;
+        font-weight: 700;
+        width: 100%;
+        margin-top: 15px;
+        box-shadow: 0 6px 20px rgba(45, 102, 246, 0.4);
+    }
 
-.footer-text{
-    text-align:center;
-    margin-top:20px;
-    font-size:.85rem;
-    color:#6c757d;
-}
+    .footer-text {
+        text-align: center;
+        margin-top: 20px;
+        font-size: .85rem;
+        color: #6c757d;
+    }
 
-.footer-text a{
-    color:var(--primary-blue);
-    text-decoration:none;
-    font-weight:700;
-}
+    .footer-text a {
+        color: var(--primary-blue);
+        text-decoration: none;
+        font-weight: 700;
+    }
 </style>
 {% endblock %}
 
@@ -133,164 +133,162 @@ label{
 
 <div class="signup-wrapper">
 
-<div class="signup-card">
+    <div class="signup-card">
 
-    <div class="header-section">
-        <h2>Fixora</h2>
-        <p>Join our professional network</p>
-    </div>
+        <div class="header-section">
+            <h2>Fixora</h2>
+            <p>Join our professional network</p>
+        </div>
 
-    <div class="form-section">
+        <div class="form-section">
 
-        <!-- Django messages -->
-        {% if messages %}
+            <!-- Django messages -->
+            {% if messages %}
             {% for message in messages %}
-                <div class="mb-4 p-3 rounded-lg text-sm font-semibold
+            <div class="mb-4 p-3 rounded-lg text-sm font-semibold
                     {% if 'success' in message.tags %}
                         bg-green-50 text-green-600
                     {% else %}
                         bg-red-50 text-red-600
                     {% endif %}">
-                    {{ message }}
-                </div>
+                {{ message }}
+            </div>
             {% endfor %}
-        {% endif %}
+            {% endif %}
 
-        <form method="POST" action="{% url 'signup' %}" enctype="multipart/form-data">
-            {% csrf_token %}
+            <form method="POST" action="{% url 'signup' %}" enctype="multipart/form-data">
+                {% csrf_token %}
 
-            <!-- Role Toggle -->
-            <div class="role-toggle">
+                <!-- Role Toggle -->
+                <div class="role-toggle">
 
-                <button type="button"
-                        class="role-btn {% if selected_role != 'provider' %}active{% endif %}"
+                    <button type="button" class="role-btn {% if selected_role != 'provider' %}active{% endif %}"
                         onclick="setRole('customer', this)">
-                    Customer
-                </button>
+                        Customer
+                    </button>
 
-                <button type="button"
-                        class="role-btn {% if selected_role == 'provider' %}active{% endif %}"
+                    <button type="button" class="role-btn {% if selected_role == 'provider' %}active{% endif %}"
                         onclick="setRole('provider', this)">
-                    Provider
+                        Provider
+                    </button>
+
+                </div>
+
+                <input type="hidden" name="role" id="role_input" value="{{ selected_role|default:'customer' }}">
+
+                <div class="section-title">Account Info</div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label>Username</label>
+                        <input type="text" name="username" class="form-control" placeholder="username" required>
+                    </div>
+
+                    <div>
+                        <label>Phone</label>
+                        <input type="text" name="phone" class="form-control" placeholder="+91 ... ....." required>
+                    </div>
+                </div>
+
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" placeholder="user@example.com" required>
+
+                <label>Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Create a strong password"
+                    required>
+
+                <div class="section-title">Address & Identity</div>
+
+                <label>Street Address</label>
+                <input type="text" name="street" class="form-control" placeholder="Enter your street address">
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label>City</label>
+                        <input type="text" name="city" class="form-control" placeholder="Enter your city">
+                    </div>
+
+                    <div>
+                        <label>Pincode</label>
+                        <input type="text" name="pincode" class="form-control" placeholder="Enter your pincode">
+                    </div>
+                </div>
+
+                <label>Profile Picture</label>
+                <input type="file" name="profile_picture" class="form-control" accept="image/*">
+
+                <div id="category-section" style="display:none;">
+
+                    <div class="section-title">Service Category</div>
+
+                    <label>Select Category</label>
+                    <select name="category" id="category_input" class="form-control">
+                        <option value="">Choose your service</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+
+                <button type="submit" class="btn-signup">
+                    Register Now
                 </button>
 
-            </div>
-
-            <input type="hidden" name="role" id="role_input"
-                   value="{{ selected_role|default:'customer' }}">
-
-            <div class="section-title">Account Info</div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label>Username</label>
-                    <input type="text" name="username" class="form-control" required>
+                <div class="footer-text">
+                    Already a member?
+                    <a href="{% url 'login' %}">Sign in</a>
                 </div>
 
-                <div>
-                    <label>Phone</label>
-                    <input type="text" name="phone" class="form-control">
-                </div>
-            </div>
+            </form>
 
-            <label>Email</label>
-            <input type="email" name="email" class="form-control" required>
-
-            <label>Password</label>
-            <input type="password" name="password" class="form-control" required>
-
-            <div class="section-title">Address & Identity</div>
-
-            <label>Street Address</label>
-            <input type="text" name="street" class="form-control">
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label>City</label>
-                    <input type="text" name="city" class="form-control">
-                </div>
-
-                <div>
-                    <label>Pincode</label>
-                    <input type="text" name="pincode" class="form-control">
-                </div>
-            </div>
-
-            <label>Profile Picture</label>
-            <input type="file" name="profile_picture" class="form-control" accept="image/*">
-
-            <div id="category-section" style="display:none;">
-
-                <div class="section-title">Service Category</div>
-
-                <label>Select Category</label>
-                <select name="category" id="category_input" class="form-control">
-                    <option value="">Choose your service</option>
-                    {% for cat in categories %}
-                    <option value="{{ cat.id }}">{{ cat.name }}</option>
-                    {% endfor %}
-                </select>
-
-            </div>
-
-            <button type="submit" class="btn-signup">
-                Register Now
-            </button>
-
-            <div class="footer-text">
-                Already a member?
-                <a href="{% url 'login' %}">Sign in</a>
-            </div>
-
-        </form>
-
+        </div>
     </div>
-</div>
 </div>
 
 <script>
-function setRole(role, btn){
+    function setRole(role, btn) {
 
-    document.getElementById("role_input").value = role;
+        document.getElementById("role_input").value = role;
 
-    const buttons = document.querySelectorAll(".role-btn");
-    buttons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+        const buttons = document.querySelectorAll(".role-btn");
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
 
-    toggleCategory(role);
-}
-
-function toggleCategory(role){
-
-    const section = document.getElementById("category-section");
-
-    if(role === "provider"){
-        section.style.display = "block";
-    }else{
-        section.style.display = "none";
-        document.getElementById("category_input").value = "";
+        toggleCategory(role);
     }
-}
 
-document.addEventListener("DOMContentLoaded", function(){
+    function toggleCategory(role) {
 
-    const role = document.getElementById("role_input").value;
+        const section = document.getElementById("category-section");
 
-    const buttons = document.querySelectorAll(".role-btn");
-
-    buttons.forEach(btn => {
-
-        btn.classList.remove("active");
-
-        if(btn.textContent.toLowerCase().includes(role)){
-            btn.classList.add("active");
+        if (role === "provider") {
+            section.style.display = "block";
+        } else {
+            section.style.display = "none";
+            document.getElementById("category_input").value = "";
         }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const role = document.getElementById("role_input").value;
+
+        const buttons = document.querySelectorAll(".role-btn");
+
+        buttons.forEach(btn => {
+
+            btn.classList.remove("active");
+
+            if (btn.textContent.toLowerCase().includes(role)) {
+                btn.classList.add("active");
+            }
+
+        });
+
+        toggleCategory(role);
 
     });
-
-    toggleCategory(role);
-
-});
 </script>
 
 {% endblock %}

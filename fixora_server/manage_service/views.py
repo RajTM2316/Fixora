@@ -339,7 +339,7 @@ def add_category(request):
 
         if Category.objects.filter(name=name).exists():
             messages.error(request, "Category already exists.")
-            return redirect("manage_service:add_category")
+            return redirect("/admin/")
 
         Category.objects.create(
             name=name,
@@ -351,7 +351,7 @@ def add_category(request):
         )
 
         messages.success(request, "Category added successfully.")
-        return redirect("manage_service:add_category")
+        return redirect("/admin/")
 
     return render(request, "admin/add_category.html")
 
