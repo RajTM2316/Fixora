@@ -15,18 +15,17 @@
         <!-- Desktop Menu -->
         <div class="hidden md:flex items-center gap-8">
 
-            <a href="{% url 'manage_service:customer_home' %}"
-               class="text-brand-action font-bold text-sm">
+            <a href="{% url 'manage_service:customer_home' %}" class="text-brand-action font-bold text-sm">
                 Home
             </a>
 
             <a href="{% url 'manage_service:service_view' %}"
-               class="text-gray-500 hover:text-brand-dark font-bold text-sm transition-colors">
+                class="text-gray-500 hover:text-brand-dark font-bold text-sm transition-colors">
                 Services
             </a>
 
             <a href="{% url 'manage_service:my_bookings' %}"
-               class="text-gray-500 hover:text-brand-dark font-bold text-sm transition-colors">
+                class="text-gray-500 hover:text-brand-dark font-bold text-sm transition-colors">
                 My Bookings
             </a>
 
@@ -43,7 +42,7 @@
             </button>
 
             <!-- Profile -->
-            <a href="/profile/"
+            <a
                 class="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 bg-white hover:shadow-md transition-all tap-effect">
 
                 {% if request.user.profile.profile_picture %}

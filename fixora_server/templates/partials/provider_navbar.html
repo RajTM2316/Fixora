@@ -3,7 +3,8 @@
 
         <!-- Logo -->
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-brand-action rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-md">
+            <div
+                class="w-8 h-8 bg-brand-action rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-md">
                 <i class="fa-solid fa-wrench text-sm"></i>
             </div>
 
@@ -15,21 +16,31 @@
         <!-- User Section -->
         <div class="flex items-center gap-4">
 
-            <div class="hidden sm:block text-right">
-                <p class="text-sm font-bold text-brand-dark leading-none">
-                    {{ request.user.username }}
-                </p>
-                <p class="text-xs text-gray-500 mt-1 font-medium">
-                    Service Provider
-                </p>
-            </div>
+            <a
+                class="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 bg-white hover:shadow-md transition-all tap-effect">
 
-            <div class="w-10 h-10 bg-indigo-50 text-brand-action rounded-full flex items-center justify-center font-bold border border-indigo-100 shadow-inner">
-                {{ request.user.username|slice:":1"|upper }}
-            </div>
+                {% if request.user.profile.profile_picture %}
+                <img src="{{ request.user.profile.profile_picture.url }}"
+                    class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                {% else %}
+                <img src="/media/profile_image/default.jpg"
+                    class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                {% endif %}
+
+                <div class="hidden sm:flex flex-col">
+                    <span class="text-[10px] text-gray-400 font-semibold uppercase leading-none">
+                        Hello
+                    </span>
+
+                    <span class="text-xs font-bold text-brand-dark leading-none">
+                        {{ request.user.username }}
+                    </span>
+                </div>
+
+            </a>
 
             <a href="{% url 'logout' %}"
-               class="bg-gray-900 hover:bg-black text-white text-sm font-semibold px-4 py-2 rounded-md flex items-center gap-2 transition">
+                class="bg-gray-900 hover:bg-black text-white text-sm font-semibold px-4 py-2 rounded-md flex items-center gap-2 transition">
                 <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
                 Logout
             </a>
