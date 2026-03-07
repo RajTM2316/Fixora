@@ -57,11 +57,11 @@
                         placeholder="Enter your password">
                 </div>
 
-                <!-- Messages -->
+                <!-- Django Messages -->
                 {% if messages %}
                     {% for message in messages %}
                         <div class="auto-hide-alert p-3 rounded-xl text-sm font-semibold text-center border
-                            {% if message.tags == 'success' %}
+                            {% if 'success' in message.tags %}
                                 bg-green-50 text-green-600 border-green-200
                             {% else %}
                                 bg-red-50 text-red-600 border-red-200
@@ -71,10 +71,12 @@
                     {% endfor %}
                 {% endif %}
 
+                <!-- Submit -->
                 <button type="submit"
                     class="w-full bg-gradient-to-r from-brand-action to-brand-primary text-white font-bold py-4 rounded-xl shadow-lg">
                     Sign In
                 </button>
+
             </form>
 
             <p class="text-center text-gray-400 text-sm mt-8">
@@ -88,6 +90,7 @@
     </div>
 </div>
 
+<!-- Role Toggle Script -->
 <script>
 function selectLoginType(type) {
     document.getElementById('roleInput').value = type;
@@ -107,6 +110,26 @@ function selectLoginType(type) {
             'flex-1 py-2 rounded-xl font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200';
     }
 }
+</script>
+
+<!-- Auto-hide alerts -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () {
+        const alerts = document.querySelectorAll(".auto-hide-alert");
+
+        alerts.forEach(function (alert) {
+            alert.style.transition = "all 0.5s ease";
+            alert.style.opacity = "0";
+            alert.style.transform = "translateY(-10px)";
+
+            setTimeout(function () {
+                alert.remove();
+            }, 500);
+        });
+
+    }, 3000);
+});
 </script>
 
 {% endblock %}

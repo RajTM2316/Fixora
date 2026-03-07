@@ -82,6 +82,7 @@ def signup_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
         role = request.POST.get("role")
+
         profile_picture = request.FILES.get("profile_picture")
         phone = request.POST.get("phone")
 
@@ -92,15 +93,18 @@ def signup_view(request):
         category_id = request.POST.get("category")
         category = Category.objects.filter(id=category_id).first() if category_id else None
 
+        # -------------------------
+        # Validation
+        # -------------------------
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists")
+            messages.error(request, "Username already exists.")
             return render(request, "manage_user/sign_up.html", {
                 "categories": categories,
                 "selected_role": selected_role
             })
 
         if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already exists")
+            messages.error(request, "Email already exists.")
             return render(request, "manage_user/sign_up.html", {
                 "categories": categories,
                 "selected_role": selected_role
@@ -113,20 +117,28 @@ def signup_view(request):
                 "selected_role": selected_role
             })
 
+        # -------------------------
+        # Create user
+        # -------------------------
         user = User.objects.create_user(
             username=username,
             email=email,
             password=password
         )
 
-        profile = Profile.objects.create(
-            user=user,
-            role=role,
-            phone=phone,
-            profile_picture=profile_picture,
-            category=category
-        )
+        # -------------------------
+        # Update auto-created profile
+        # -------------------------
+        profile = user.profile
+        profile.role = role
+        profile.phone = phone
+        profile.profile_picture = profile_picture
+        profile.category = category
+        profile.save()
 
+        # -------------------------
+        # Create address (optional)
+        # -------------------------
         if street or city or pincode:
             address = Address.objects.create(
                 street=street,
