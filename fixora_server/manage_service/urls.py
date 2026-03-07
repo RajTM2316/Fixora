@@ -38,4 +38,11 @@ urlpatterns = [
     # =========================
     path('api/save-location/', views.save_location, name='save_location'),
     path('location-map/', views.location_map, name='location_map'),
+
+    # =========================
+    #Admin Category Activation
+    # =========================
+    path("admin/categories/", views.admin_category_list, name="admin_category_list"),
+    path("admin/categories/toggle/<int:category_id>/", views.toggle_category_status, name="toggle_category_status"),
+
 ]

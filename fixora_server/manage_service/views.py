@@ -423,3 +423,22 @@ def location_map(request):
         "latitude": profile.latitude,
         "longitude": profile.longitude
     })
+
+
+# =========================
+# ACTIVATE/DEACTIVATE CATEGORY (ADMIN)
+# =========================
+@staff_member_required
+def admin_category_list(request):
+    categories = Category.objects.all()
+    return render(request, "admin/activate_category.html", {
+        "categories": categories
+    })
+
+
+@staff_member_required
+def toggle_category_status(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    category.is_active = not category.is_active
+    category.save()
+    return redirect("manage_service:admin_category_list")
