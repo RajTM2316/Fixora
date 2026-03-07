@@ -17,6 +17,8 @@
 
 {% block content %}
 
+{% include "partials/customer_navbar.html" %}
+
 <div class="max-w-7xl mx-auto w-full px-6 pt-8">
 
     <!-- HERO -->
@@ -199,5 +201,6 @@
     </section>
 
 </div>
-
+    <!-- Global Footer -->
+    {% include "partials/footer.html" %}
 {% endblock %}

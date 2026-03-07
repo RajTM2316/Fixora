@@ -1,0 +1,79 @@
+<nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+        <!-- Logo -->
+        <a href="{% url 'manage_service:customer_home' %}" class="flex items-center gap-2 tap-effect">
+            <div class="w-8 h-8 bg-brand-action rounded-lg flex items-center justify-center text-white">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+            </div>
+
+            <span class="text-2xl font-extrabold text-brand-dark tracking-tight">
+                Fixora
+            </span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center gap-8">
+
+            <a href="{% url 'manage_service:customer_home' %}"
+               class="text-brand-action font-bold text-sm">
+                Home
+            </a>
+
+            <a href="{% url 'manage_service:service_view' %}"
+               class="text-gray-500 hover:text-brand-dark font-bold text-sm transition-colors">
+                Services
+            </a>
+
+            <a href="{% url 'manage_service:my_bookings' %}"
+               class="text-gray-500 hover:text-brand-dark font-bold text-sm transition-colors">
+                My Bookings
+            </a>
+
+        </div>
+
+        <!-- User Section -->
+        <div class="flex items-center gap-4">
+
+            <!-- Location -->
+            <button onclick="getLocation()"
+                class="w-10 h-10 rounded-full bg-gray-50 text-brand-action hover:bg-indigo-50 border border-gray-100 flex items-center justify-center transition-all tap-effect"
+                title="Share Location">
+                <i class="fa-solid fa-location-crosshairs"></i>
+            </button>
+
+            <!-- Profile -->
+            <a href="/profile/"
+                class="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 bg-white hover:shadow-md transition-all tap-effect">
+
+                {% if request.user.profile.profile_picture %}
+                <img src="{{ request.user.profile.profile_picture.url }}"
+                    class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                {% else %}
+                <img src="/media/profile_image/default.jpg"
+                    class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                {% endif %}
+
+                <div class="hidden sm:flex flex-col">
+                    <span class="text-[10px] text-gray-400 font-semibold uppercase leading-none">
+                        Hello
+                    </span>
+
+                    <span class="text-xs font-bold text-brand-dark leading-none">
+                        {{ request.user.username }}
+                    </span>
+                </div>
+
+            </a>
+
+            <!-- Logout -->
+            <a href="{% url 'logout' %}"
+                class="bg-gray-900 hover:bg-black text-white text-sm font-semibold px-4 py-2 rounded-md flex items-center gap-2 transition">
+                <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+</nav>

@@ -2,7 +2,7 @@
 {% block title %}Fixora | Provider Dashboard{% endblock %}
 
 {% block content %}
-
+{% include "partials/provider_navbar.html" %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
     <!-- HEADER -->
@@ -189,5 +189,6 @@
     </div>
 
 </div>
-
+<!-- Global Footer -->
+    {% include "partials/footer.html" %}
 {% endblock %}

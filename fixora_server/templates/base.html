@@ -29,7 +29,8 @@
     </script>
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Global Styles -->
     <style>
@@ -66,21 +67,10 @@
 
 <body class="bg-brand-surface min-h-screen flex flex-col">
 
-    <!-- Only show navbar when logged in -->
-    {% if request.user.is_authenticated %}
-    {% include "partials/navbar.html" %}
-    {% endif %}
-
+    <!-- Page Content -->
     <main class="flex-grow">
         {% block content %}{% endblock %}
     </main>
-
-    {% include "partials/footer.html" %}
-
-    <!-- Only show mobile nav when logged in -->
-    {% if request.user.is_authenticated %}
-    {% include "partials/mobile_nav.html" %}
-    {% endif %}
 
     <!-- Global JS -->
     <script>
@@ -98,6 +88,7 @@
             }
             return cookieValue;
         }
+
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(sendPosition, showError);

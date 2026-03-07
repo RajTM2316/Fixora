@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-
+{% include "partials/customer_navbar.html" %}
 <div class="bg-brand-surface text-slate-800 py-10 px-4 sm:px-6 min-h-screen">
     <div class="max-w-3xl mx-auto">
 
@@ -162,5 +162,6 @@
         </div>
     </div>
 </div>
-
+<!-- Global Footer -->
+    {% include "partials/footer.html" %}
 {% endblock %}
