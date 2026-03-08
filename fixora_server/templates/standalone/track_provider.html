@@ -1,49 +1,209 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Track Provider</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Provider | Fixora</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-    <style>
-        #map {
-            height: 500px;
-            width: 100%;
-        }
-    </style>
-
-</head>
-
-<body>
-
-    <h2>Track Your Service Provider</h2>
-
-    <div id="map"></div>
-
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-    <script>
+    <style>
+        :root {
+            --aurora-1: #0091ff;
+            --glass: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-main: #0f172a;
+        }
 
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: "Inter", -apple-system, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Animated Road/Grid Background */
+        #road-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(circle at center, transparent, #e2e8f0);
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            z-index: 10;
+            position: relative;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 25px;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            color: #1e293b;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            backdrop-filter: blur(25px);
+            padding: 24px;
+            box-shadow: 0 50px 100px rgba(15, 23, 42, 0.1);
+        }
+
+        #map {
+            height: 520px;
+            width: 100%;
+            border-radius: 24px;
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .ui-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 10px 0;
+        }
+
+        .telemetry {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.75rem;
+            color: #64748b;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .telemetry span {
+            color: var(--aurora-1);
+            font-weight: bold;
+        }
+
+        /* Customizing Leaflet Controls */
+        .leaflet-bar a { background: white !important; color: #0f172a !important; border: none !important; box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important; }
+        .leaflet-control-attribution { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <canvas id="road-bg"></canvas>
+
+    <div class="container">
+        <h2>Provider Track</h2>
+
+        <div class="glass-card">
+            <div id="map"></div>
+
+            <div class="ui-footer">
+                <div class="telemetry">
+                    PROVIDER_LAT: <span id="lat-val">--.----</span> &nbsp; LNG: <span id="lng-val">--.----</span>
+                </div>
+                <div class="telemetry" style="color: var(--aurora-1); font-weight: bold;">
+                    STATUS: LIVE
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Background Animation: Moving Grid/Cars ---
+        const canvas = document.getElementById('road-bg');
+        const ctx = canvas.getContext('2d');
+        let vehicles = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Vehicle {
+            constructor(isVertical) {
+                this.isVertical = isVertical;
+                this.reset();
+            }
+            reset() {
+                this.speed = Math.random() * 2 + 1;
+                this.size = Math.random() * 20 + 10;
+                if(this.isVertical) {
+                    this.x = Math.floor(Math.random() * (canvas.width / 100)) * 100;
+                    this.y = -50;
+                } else {
+                    this.y = Math.floor(Math.random() * (canvas.height / 100)) * 100;
+                    this.x = -50;
+                }
+            }
+            update() {
+                if(this.isVertical) this.y += this.speed;
+                else this.x += this.speed;
+                if(this.x > canvas.width + 50 || this.y > canvas.height + 50) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(0, 145, 255, 0.15)';
+                ctx.fillRect(this.x, this.y, this.isVertical ? 2 : this.size, this.isVertical ? this.size : 2);
+            }
+        }
+
+        function setup() {
+            initCanvas();
+            vehicles = [];
+            for(let i=0; i<15; i++) vehicles.push(new Vehicle(Math.random() > 0.5));
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(15, 23, 42, 0.05)';
+            ctx.lineWidth = 1;
+            for(let x = 0; x < canvas.width; x += 100) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for(let y = 0; y < canvas.height; y += 100) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+            vehicles.forEach(v => { v.update(); v.draw(); });
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', setup);
+        setup();
+        draw();
+
+        // --- Provider Map Logic ---
         let providerLat = parseFloat("{{ provider.latitude|default:'0' }}");
         let providerLng = parseFloat("{{ provider.longitude|default:'0' }}");
 
-        console.log("Provider Lat:", providerLat);
-        console.log("Provider Lng:", providerLng);
+        // Update UI Text
+        document.getElementById("lat-val").innerText = providerLat.toFixed(4);
+        document.getElementById("lng-val").innerText = providerLng.toFixed(4);
 
-        var map = L.map('map').setView([providerLat, providerLng], 15);
+        var map = L.map('map', { zoomControl: false }).setView([providerLat, providerLng], 15);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'OpenStreetMap'
-        }).addTo(map);
+        // Light Theme Map (Positron)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+        L.control.zoom({ position: "bottomright" }).addTo(map);
 
         L.marker([providerLat, providerLng])
             .addTo(map)
-            .bindPopup("Service Provider Location")
+            .bindPopup("<div style='color:#0091ff; font-weight:bold;'>PROVIDER LOCATION</div>")
             .openPopup();
 
     </script>
-
 </body>
-
 </html>
