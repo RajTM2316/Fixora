@@ -21,6 +21,12 @@ def provider_dashboard(request):
 
     if profile.role != "provider":
         return HttpResponseForbidden("Access denied.")
+    
+    if request.method == "POST" and "toggle_availability" in request.POST:
+        services = ProviderService.objects.filter(provider=profile)
+        new_status = not services.first().is_available if services.exists() else True
+        services.update(is_available=new_status)
+        return redirect("manage_service:provider_dashboard")
 
     provider_services = ProviderService.objects.filter(provider=profile)
 
@@ -69,9 +75,12 @@ def customer_home(request):
         status__in=["PENDING", "ACCEPTED"]
     ).first()
 
+    available_providers = ProviderService.objects.filter(is_available=True)
+
     return render(request, "customer/customer_home.html", {
         "categories": categories,
-        "active_booking": active_booking
+        "active_booking": active_booking,
+        "available_providers": available_providers
     })
 
 
@@ -403,7 +412,7 @@ def add_category(request):
             name=name,
             description=request.POST.get("description"),
             image=request.FILES.get("image"),
-            is_active=True,
+            is_active = bool(request.POST.get("is_active")),
             estimated_time=request.POST.get("estimated_time"),
             estimated_price=request.POST.get("estimated_price"),
         )

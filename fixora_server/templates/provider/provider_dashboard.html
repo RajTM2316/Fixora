@@ -3,24 +3,43 @@
 
 {% block content %}
 {% include "partials/provider_navbar.html" %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex items-center gap-4 sm:gap-6">
 
-    <!-- HEADER -->
-    <div class="mb-8 flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-brand-dark">
-                Dashboard Overview
-            </h1>
-            <p class="text-gray-500 text-sm mt-1">
-                Manage your active jobs, incoming requests, and history.
-            </p>
-        </div>
-
-        <a href="{% url 'manage_service:add_service' %}"
-            class="bg-gradient-to-r from-brand-action to-indigo-600 hover:opacity-90 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg transition-all flex items-center gap-2">
-            <i class="fa-solid fa-plus"></i>
-            Add Service
+        <form method="POST" class="m-0 flex items-center">
+            {% csrf_token %}
+            <input type="hidden" name="toggle_availability" value="true">
+    
+            <button type="submit" class="flex items-center gap-3 group tap-effect focus:outline-none bg-white py-1.5 px-3 rounded-full border border-gray-100 shadow-sm hover:shadow transition-all">
+                
+                <span class="text-xs font-bold uppercase tracking-wide transition-colors duration-200 flex items-center gap-1.5 {% if provider_services.0.is_available %} text-emerald-600 {% else %} text-gray-500 {% endif %}">
+                    {% if provider_services.0.is_available %}
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse border border-emerald-200"></span>
+                        Online
+                    {% else %}
+                        <span class="w-2 h-2 rounded-full bg-gray-400 border border-gray-200"></span>
+                        Offline
+                    {% endif %}
+                </span>
+    
+                <div class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ease-in-out shadow-inner {% if provider_services.0.is_available %} bg-emerald-500 {% else %} bg-gray-200 hover:bg-gray-300 {% endif %}">
+                    <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-300 ease-in-out {% if provider_services.0.is_available %} translate-x-6 {% else %} translate-x-1 {% endif %}">
+                    </span>
+                </div>
+    
+            </button>
+        </form>
+    
+        <div class="h-8 w-px bg-gray-200 hidden sm:block"></div>
+    
+        <a href="{% url 'manage_service:add_service' %}" class="bg-brand-action hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-md shadow-indigo-200 transition-all tap-effect flex items-center justify-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <span class="hidden sm:inline">Add Service</span>
+            <span class="sm:hidden">Add</span>
         </a>
+    
     </div>
 
     <!-- ACTIVE JOB -->

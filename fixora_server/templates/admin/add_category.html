@@ -3,83 +3,266 @@
 
 {% block extra_css %}
 <style>
-    .glass-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 1);
-        box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.1);
-    }
 
-    .file-drop-zone {
-        transition: all 0.3s ease;
-        background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%234F46E5FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-linecap='square'/%3e%3c/svg%3e");
-    }
+.glass-card{
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    border:1px solid rgba(255,255,255,1);
+    box-shadow:0 20px 50px -12px rgba(0,0,0,0.1);
+}
 
-    .file-drop-zone:hover {
-        background-color: rgba(79, 70, 229, 0.05);
-        transform: scale(1.01);
-    }
+.file-drop-zone{
+    transition:all 0.3s ease;
+    background-image:url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%234F46E5FF' stroke-width='2' stroke-dasharray='12%2c 12'/%3e%3c/svg%3e");
+}
+
+.file-drop-zone:hover{
+    background-color:rgba(79,70,229,0.05);
+    transform:scale(1.005);
+}
+
+.toggle-checkbox:checked{
+    right:0;
+    border-color:#4F46E5;
+}
+
+.toggle-checkbox:checked + .toggle-label{
+    background-color:#4F46E5;
+}
+
+.btn-shimmer{
+    position:relative;
+    overflow:hidden;
+}
+
+.btn-shimmer::after{
+    content:'';
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);
+    transition:0.5s;
+}
+
+.btn-shimmer:hover::after{
+    left:100%;
+}
+
 </style>
 {% endblock %}
 
 {% block content %}
 
 <div class="min-h-screen flex items-center justify-center py-10 px-4">
-    <div class="glass-card rounded-3xl p-10 w-full max-w-xl">
 
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white mb-4 shadow-lg">
-                <i class="fa-solid fa-layer-group text-xl"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-brand-dark">
-                Add Service Category
-            </h2>
-            <p class="text-gray-500 text-sm mt-1">
-                Create a new service offering for Fixora.
-            </p>
-        </div>
+<div class="glass-card rounded-3xl p-10 w-full max-w-xl">
 
-        <form method="POST" enctype="multipart/form-data" class="space-y-5">
-            {% csrf_token %}
-
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">
-                    Category Name
-                </label>
-                <input type="text" name="name" required
-                       class="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-action">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">
-                    Description
-                </label>
-                <textarea name="description" rows="3"
-                          class="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-action"></textarea>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <input type="text" name="estimated_price" placeholder="Estimated Price"
-                       class="px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-action">
-                <input type="text" name="estimated_time" placeholder="Estimated Time"
-                       class="px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-action">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">
-                    Category Image
-                </label>
-                <input type="file" name="image"
-                       class="w-full border border-gray-200 rounded-xl p-3">
-            </div>
-
-            <button type="submit"
-                    class="w-full bg-brand-action hover:bg-brand-dark text-white py-3.5 rounded-xl font-semibold transition-all">
-                Create Category
-            </button>
-        </form>
-
-    </div>
+<div class="text-center mb-8">
+<div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white mb-4 shadow-lg">
+<i class="fa-solid fa-layer-group text-xl"></i>
 </div>
+
+<h2 class="text-2xl font-bold text-gray-800">
+Add Service Category
+</h2>
+
+<p class="text-gray-500 text-sm mt-1">
+Create a new service offering for Fixora.
+</p>
+</div>
+
+
+<form method="POST" enctype="multipart/form-data" class="space-y-5">
+
+{% csrf_token %}
+
+
+<!-- Category Name -->
+<div class="group">
+
+<label class="block text-xs font-bold text-gray-500 uppercase mb-2">
+Category Name
+</label>
+
+<div class="relative">
+
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="fa-solid fa-tag text-gray-400"></i>
+</div>
+
+<input type="text"
+name="name"
+required
+placeholder="e.g. Plumbing, Electrical"
+class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-action">
+
+</div>
+
+</div>
+
+
+
+<!-- Description -->
+
+<div>
+
+<label class="block text-xs font-bold text-gray-500 uppercase mb-2">
+Description
+</label>
+
+<textarea name="description"
+rows="3"
+placeholder="Briefly describe what this category covers..."
+class="w-full px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-action"></textarea>
+
+</div>
+
+
+
+<!-- Price + Time -->
+
+<div class="grid grid-cols-2 gap-4">
+
+<input type="text"
+name="estimated_price"
+placeholder="Estimated Price"
+class="px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-action">
+
+
+<input type="text"
+name="estimated_time"
+placeholder="Estimated Time"
+class="px-4 py-3 bg-slate-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-action">
+
+</div>
+
+
+
+<!-- Image Upload -->
+
+<div>
+
+<label class="block text-xs font-bold text-gray-500 uppercase mb-2">
+Category Image
+</label>
+
+<div class="file-drop-zone relative w-full h-28 rounded-xl flex flex-col items-center justify-center cursor-pointer bg-slate-50">
+
+<input type="file"
+name="image"
+id="file-upload"
+class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+onchange="previewFile()">
+
+<div id="upload-placeholder" class="text-center">
+
+<i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-400 mb-1"></i>
+
+<p class="text-xs text-gray-500">
+Click or Drag image here
+</p>
+
+</div>
+
+<img id="image-preview"
+class="absolute inset-0 w-full h-full object-cover rounded-xl hidden"/>
+
+</div>
+
+</div>
+
+
+
+<!-- Active Toggle -->
+
+<div class="flex items-center justify-between bg-white border border-gray-100 p-3 rounded-xl">
+
+<div class="flex items-center space-x-3">
+
+<div class="bg-emerald-50 p-2 rounded-lg text-emerald-600">
+<i class="fa-solid fa-power-off text-sm"></i>
+</div>
+
+<div>
+
+<span class="text-sm font-semibold text-gray-700">
+Active Status
+</span>
+
+<p class="text-xs text-gray-400">
+Visible to users immediately
+</p>
+
+</div>
+
+</div>
+
+
+<div class="relative inline-block w-12">
+
+<input type="checkbox"
+name="is_active"
+id="toggle"
+class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 right-6 top-0 border-gray-200"
+checked>
+
+<label for="toggle"
+class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-200 cursor-pointer"></label>
+
+</div>
+
+</div>
+
+
+
+<!-- Submit -->
+
+<button type="submit"
+class="btn-shimmer w-full bg-brand-action hover:bg-brand-dark text-white py-3.5 rounded-xl font-semibold transition">
+
+<i class="fa-solid fa-plus mr-2"></i>
+Create Category
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+function previewFile(){
+
+const preview = document.getElementById('image-preview');
+const placeholder = document.getElementById('upload-placeholder');
+
+const file = document.querySelector('#file-upload').files[0];
+
+const reader = new FileReader();
+
+reader.addEventListener("load",function(){
+
+preview.src = reader.result;
+preview.classList.remove('hidden');
+placeholder.classList.add('hidden');
+
+});
+
+if(file){
+reader.readAsDataURL(file);
+}
+
+}
+
+</script>
 
 {% endblock %}
