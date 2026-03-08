@@ -1,116 +1,214 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Service Completed{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Service Completed</title>
+{% block extra_css %}
+<style>
+    /* Modern font to match the dashboard */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background-color: #f8fafc; /* brand-surface from previous pages */
+        margin: 0;
+        padding: 0;
+        color: #0f172a; /* brand-dark */
+    }
 
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            text-align: center;
-            width: 420px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
+    .complete-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 2rem;
+    }
 
-        h1 {
-            color: #2ecc71;
-        }
+    .container {
+        background: #ffffff;
+        padding: 3rem 2.5rem;
+        border-radius: 24px; /* Matches the rounded-[24px] used in earlier cards */
+        text-align: center;
+        width: 100%;
+        max-width: 460px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f1f5f9;
+    }
 
-        p {
-            color: #555;
-        }
+    /* Professional Success Icon */
+    .success-icon {
+        width: 64px;
+        height: 64px;
+        background-color: #ecfdf5; 
+        color: #10b981; /* brand-success */
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin: 0 auto 1.5rem auto;
+        border: 4px solid #d1fae5;
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
 
-        .star-rating {
-            direction: rtl;
-            font-size: 30px;
-            margin: 20px 0;
-        }
+    @keyframes popIn {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
 
-        .star-rating input {
-            display: none;
-        }
+    h1 {
+        color: #0f172a; /* brand-dark */
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.025em;
+    }
 
-        .star-rating label {
-            color: #ccc;
-            cursor: pointer;
-        }
+    p {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin: 0 0 0.25rem 0;
+        line-height: 1.5;
+    }
 
-        .star-rating input:checked~label {
-            color: #f5b301;
-        }
+    .subtitle {
+        margin-bottom: 2rem;
+    }
 
-        .star-rating label:hover,
-        .star-rating label:hover~label {
-            color: #f5b301;
-        }
+    /* Interactive Star Rating UI */
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse; /* Allows pure CSS hover highlighting */
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 1.5rem 0 2rem 0;
+    }
 
-        textarea {
-            width: 100%;
-            height: 90px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            resize: none;
-        }
+    .star-rating input {
+        display: none;
+    }
 
-        button {
-            margin-top: 15px;
-            padding: 10px 25px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    .star-rating label {
+        font-size: 2.5rem;
+        color: #e2e8f0; 
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
 
-        button:hover {
-            background: #2980b9;
-        }
-    </style>
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+        color: #f59e0b; /* Professional Amber Gold */
+    }
 
-</head>
+    .star-rating label:hover {
+        transform: scale(1.1);
+    }
 
-<body>
+    /* Form Fields Styling */
+    .form-group {
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
 
+    .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.5rem;
+    }
+
+    textarea {
+        width: 100%;
+        height: 100px;
+        padding: 1rem;
+        border-radius: 12px; /* Matches rounded-xl */
+        border: 1px solid #e2e8f0;
+        background-color: #f8fafc;
+        font-family: inherit;
+        font-size: 0.95rem;
+        color: #0f172a;
+        resize: none;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: #64d994; /* brand-action */
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px #64d994;
+    }
+
+    textarea::placeholder {
+        color: #94a3b8;
+    }
+
+    /* Primary Button Styling */
+    button {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        background-color: #7be4a5; /* brand-action */
+        color: #ffffff;
+        border: none;
+        border-radius: 12px; /* Matches rounded-xl */
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px -1px #7be4a5;
+    }
+
+    button:hover {
+        background-color: #64d994; /* Darker hover state */
+        transform: translateY(-2px);
+        box-shadow: 0 6px 10px -1px #64d994;
+    }
+
+    button:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="complete-wrapper">
     <div class="container">
+        
+        <div class="success-icon">✓</div>
 
-        <h1>✔ Service Completed</h1>
-
+        <h1>Service Completed</h1>
         <p>Your service has been successfully completed.</p>
-        <p>Please rate your experience.</p>
+        <p class="subtitle">Please take a moment to rate your experience.</p>
 
         <form method="POST">
             {% csrf_token %}
 
-            <textarea name="feedback" required></textarea>
+            <div class="star-rating">
+                <input type="radio" id="star5" name="rating" value="5" required />
+                <label for="star5" title="5 stars">★</label>
+                
+                <input type="radio" id="star4" name="rating" value="4" />
+                <label for="star4" title="4 stars">★</label>
+                
+                <input type="radio" id="star3" name="rating" value="3" />
+                <label for="star3" title="3 stars">★</label>
+                
+                <input type="radio" id="star2" name="rating" value="2" />
+                <label for="star2" title="2 stars">★</label>
+                
+                <input type="radio" id="star1" name="rating" value="1" />
+                <label for="star1" title="1 star">★</label>
+            </div>
 
-            <select name="rating">
-                <option value="5">5</option>
-                <option value="4">4</option>
-                <option value="3">3</option>
-                <option value="2">2</option>
-                <option value="1">1</option>
-            </select>
+            <div class="form-group">
+                <label for="feedback">Leave a review</label>
+                <textarea id="feedback" name="feedback" placeholder="Tell us what you loved about the service..." required></textarea>
+            </div>
 
             <button type="submit">Submit Feedback</button>
         </form>
 
     </div>
-
-</body>
-
-</html>
+</div>
+{% endblock %}
