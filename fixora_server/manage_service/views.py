@@ -84,6 +84,14 @@ def my_bookings(request):
 
     if profile.role != "customer":
         return HttpResponseForbidden("Access denied.")
+    pending_payment = ServiceRequest.objects.filter(
+        customer=profile,
+        status="COMPLETED",
+        payment_done=False
+    ).first()
+
+    if pending_payment:
+        return redirect("manage_service:complete_service", request_id=pending_payment.id)
 
     bookings = ServiceRequest.objects.filter(
         customer=profile
@@ -96,6 +104,45 @@ def my_bookings(request):
         "bookings": bookings
     })
 
+# =========================
+#FEEDBACK and PAYMENT
+# =========================
+from django.shortcuts import redirect
+from django.contrib import messages
+
+@login_required
+def complete_service(request, request_id):
+
+    profile = get_object_or_404(Profile, user=request.user)
+
+    service = get_object_or_404(
+        ServiceRequest,
+        id=request_id,
+        customer=profile
+    )
+
+    if request.method == "POST":
+
+        feedback = request.POST.get("feedback")
+        rating = request.POST.get("rating")
+
+        service.feedback_given = True
+        #temporary payment logic
+        service.payment_done = True
+        service.status = "COMPLETED"
+        service.save()
+
+        messages.success(request, "Feedback submitted!")
+
+        return redirect("manage_service:my_bookings")
+
+    return render(request, "customer/complete_service.html", {
+        "service": service
+    })
+
+
+
+     
 
 # =========================
 # SERVICE LISTING
