@@ -1,3 +1,120 @@
-<h1>Payment Failed</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed</title>
+    <style>
+        :root {
+            --error-red: #e74c3c;
+            --dark-text: #2c3e50;
+            --bg-color: #f9f9f9;
+        }
 
-<a href="/payments/pay/">Try Again</a>
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Slide up animation + Final shake */
+        @keyframes slideAndShake {
+            0% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+            70% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            80% { transform: translateX(-5px); }
+            90% { transform: translateX(5px); }
+            100% {
+                transform: translate(0);
+                opacity: 1;
+            }
+        }
+
+        .failure-card {
+            background: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(231, 76, 60, 0.15);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            
+            /* Animation logic */
+            animation: slideAndShake 0.9s cubic-bezier(0.175, 0.885, 0.32, 1) forwards;
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background: var(--error-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: var(--dark-text);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .btn-retry {
+            display: inline-block;
+            text-decoration: none;
+            background-color: var(--error-red);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .btn-retry:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .secondary-link {
+            display: block;
+            margin-top: 20px;
+            color: #95a5a6;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="failure-card">
+        <div class="icon-circle">!</div>
+        <h1>Payment Failed</h1>
+        <p>We couldn't process your transaction. This might be due to a connection error or insufficient funds.</p>
+        
+        <a href="/payments/pay/" class="btn-retry">Try Again</a>
+        
+        <a href="/" class="secondary-link">Cancel and return home</a>
+    </div>
+
+</body>
+</html>
