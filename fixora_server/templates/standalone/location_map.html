@@ -143,7 +143,6 @@
       // --- Background Animation: Moving Grid/Cars ---
       const canvas = document.getElementById('road-bg');
       const ctx = canvas.getContext('2d');
-      let gridOffset = 0;
       let vehicles = [];
 
       function initCanvas() {
@@ -170,7 +169,6 @@
         update() {
           if(this.isVertical) this.y += this.speed;
           else this.x += this.speed;
-
           if(this.x > canvas.width + 50 || this.y > canvas.height + 50) this.reset();
         }
         draw() {
@@ -187,8 +185,6 @@
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Draw Light Grid Lines
         ctx.strokeStyle = 'rgba(15, 23, 42, 0.05)';
         ctx.lineWidth = 1;
         for(let x = 0; x < canvas.width; x += 100) {
@@ -197,7 +193,6 @@
         for(let y = 0; y < canvas.height; y += 100) {
           ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
         }
-
         vehicles.forEach(v => { v.update(); v.draw(); });
         requestAnimationFrame(draw);
       }
@@ -217,30 +212,58 @@
       }
 
       function initMap(lt, lg) {
-        if (map) map.remove();
-        map = L.map("map", { zoomControl: false }).setView([lt, lg], 15);
+        if (map) {
+          map.setView([lt, lg], 16);
+          if (marker) marker.setLatLng([lt, lg]);
+          updateUI(lt, lg);
+          return;
+        }
+
+        map = L.map("map", { zoomControl: false }).setView([lt, lg], 16);
         L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png").addTo(map);
         L.control.zoom({ position: "bottomright" }).addTo(map);
 
         marker = L.marker([lt, lg]).addTo(map)
           .bindPopup("<div style='color:#0091ff; font-weight:bold;'>VEHICLE TRACKED</div>")
           .openPopup();
+        
         updateUI(lt, lg);
       }
 
-      if (lat && lng) {
+      // Automatically try to initialize if server data exists
+      if (lat && lng && lat !== '' && lng !== '') {
         initMap(parseFloat(lat), parseFloat(lng));
       } else {
         document.getElementById("map").innerHTML = 
-          "<div style='display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; letter-spacing:3px; font-size:0.8rem;'>SCANNING FOR ROAD SIGNAL...</div>";
+          "<div id='status-msg' style='display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; letter-spacing:3px; font-size:0.8rem;'>SCANNING FOR ROAD SIGNAL...</div>";
       }
 
       function getLocation() {
+        const statusMsg = document.getElementById("status-msg");
+        if (statusMsg) statusMsg.innerText = "ACQUIRING HIGH-RES SIGNAL...";
+
         if (navigator.geolocation) {
+          const geoOptions = {
+            enableHighAccuracy: true, // Forces GPS for accuracy
+            timeout: 10000,
+            maximumAge: 0             // Ensures fresh data
+          };
+
           navigator.geolocation.getCurrentPosition(
-            p => initMap(p.coords.latitude, p.coords.longitude),
-            () => alert("Location permission denied.")
+            p => {
+              initMap(p.coords.latitude, p.coords.longitude);
+            },
+            (error) => {
+              let msg = "Location error.";
+              if(error.code == 1) msg = "Permission Denied. Please enable GPS.";
+              else if(error.code == 3) msg = "Timeout - Weak GPS signal.";
+              alert(msg);
+              if (statusMsg) statusMsg.innerText = "SIGNAL BLOCKED.";
+            },
+            geoOptions
           );
+        } else {
+          alert("Geolocation not supported.");
         }
       }
     </script>
