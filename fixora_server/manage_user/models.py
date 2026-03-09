@@ -49,6 +49,10 @@ class Profile(models.Model):
         blank=True,
         related_name="providers"
     )
+
+    #feedback and rating
+    average_rating = models.FloatField(default=0)
+    total_reviews = models.IntegerField(default=0)
     #For Live-Location Tracking
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)

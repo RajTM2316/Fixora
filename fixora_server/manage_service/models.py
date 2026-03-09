@@ -88,3 +88,33 @@ from chat.models import Conversation
 def create_conversation(sender, instance, created, **kwargs):
     if created:
         Conversation.objects.create(service_request=instance)
+
+
+class Feedback(models.Model):
+
+    service_request = models.OneToOneField(
+        ServiceRequest,
+        on_delete=models.CASCADE,
+        related_name="feedback"
+    )
+
+    customer = models.ForeignKey(
+        "manage_user.Profile",
+        on_delete=models.CASCADE,
+        related_name="given_feedbacks"
+    )
+
+    provider = models.ForeignKey(
+        "manage_user.Profile",
+        on_delete=models.CASCADE,
+        related_name="received_feedbacks"
+    )
+
+    rating = models.IntegerField()
+
+    comment = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.customer.user.username} → {self.provider.user.username} ({self.rating})"
