@@ -2,11 +2,96 @@
 <html>
 <head>
     <title>Fixora Secure Payment</title>
+    <style>
+        /* Soft, Pleasant Background Animation */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+            color: #333;
+        }
+
+        /* Clean, Elevated Card */
+        .payment-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 20px 20px 60px #bebebe, 
+                        -20px -20px 60px #ffffff;
+            text-align: center;
+            width: 350px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h2 {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 8px;
+            font-size: 1.6rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #636e72;
+            margin-bottom: 40px;
+        }
+
+        /* THE ANIMATED BUTTON */
+        #pay-btn {
+            background: #00b894; /* A pleasant, secure green */
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
+            transition: all 0.3s ease;
+            
+            /* Animation Logic */
+            position: relative;
+            display: inline-block;
+            animation: slideFromBottom 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        #pay-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 184, 148, 0.5);
+            background: #55efc4;
+        }
+
+        #pay-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Extreme slide animation */
+        @keyframes slideFromBottom {
+            0% {
+                transform: translateY(120vh); /* Start far below screen */
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0); /* Stops perfectly in the card center */
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
-<body style="text-align:center; margin-top:100px; font-family:Arial;">
-<h2>Fixora Secure Payment</h2>
-<p>Amount: ₹{{ service_request.provider_service.service.base_price }}</p>
-<button id="pay-btn">Pay Now</button>
+<body>
+
+<div class="payment-card">
+    <h2>Fixora Secure Payment</h2>
+    <p>Amount: ₹{{ service_request.provider_service.service.base_price }}</p>
+    <button id="pay-btn">Pay Now</button>
+</div>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
