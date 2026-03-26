@@ -339,28 +339,28 @@ def accept_request(request, request_id):
         messages.error(request, "Invalid or already handled request.")
         return redirect("manage_service:provider_dashboard")
 
-    
-    already_taken = ServiceRequest.objects.filter(
-        customer=service_request.customer,
-        status="ACCEPTED"
-    ).exists()
+    # Prevent multiple request
+    # already_taken = ServiceRequest.objects.filter(
+    #     customer=service_request.customer,
+    #     status="ACCEPTED"
+    # ).exists()
 
-    if already_taken:
-        service_request.status = "REJECTED"
-        service_request.save()
+    # if already_taken:
+    #     service_request.status = "REJECTED"
+    #     service_request.save()
 
-        messages.error(request, "Already accepted by another provider.")
-        return redirect("manage_service:provider_dashboard")
+    #     messages.error(request, "Already accepted by another provider.")
+    #     return redirect("manage_service:provider_dashboard")
 
     
     service_request.status = "ACCEPTED"
     service_request.save()
 
     
-    ServiceRequest.objects.filter(
-        customer=service_request.customer,
-        status="PENDING"
-    ).exclude(id=service_request.id).update(status="REJECTED")
+    # ServiceRequest.objects.filter(
+    #     customer=service_request.customer,
+    #     status="PENDING"
+    # ).exclude(id=service_request.id).update(status="REJECTED")
 
     
     lat = request.GET.get("latitude")
