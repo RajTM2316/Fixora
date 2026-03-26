@@ -8,10 +8,12 @@
 
     body {
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        background-color: #f8fafc; /* brand-surface from previous pages */
+        background-color: #f8fafc;
+        /* brand-surface from previous pages */
         margin: 0;
         padding: 0;
-        color: #0f172a; /* brand-dark */
+        color: #0f172a;
+        /* brand-dark */
     }
 
     .complete-wrapper {
@@ -25,7 +27,8 @@
     .container {
         background: #ffffff;
         padding: 3rem 2.5rem;
-        border-radius: 24px; /* Matches the rounded-[24px] used in earlier cards */
+        border-radius: 24px;
+        /* Matches the rounded-[24px] used in earlier cards */
         text-align: center;
         width: 100%;
         max-width: 460px;
@@ -37,8 +40,9 @@
     .success-icon {
         width: 64px;
         height: 64px;
-        background-color: #ecfdf5; 
-        color: #10b981; /* brand-success */
+        background-color: #ecfdf5;
+        color: #10b981;
+        /* brand-success */
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -50,12 +54,20 @@
     }
 
     @keyframes popIn {
-        0% { transform: scale(0.5); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
+        0% {
+            transform: scale(0.5);
+            opacity: 0;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
     }
 
     h1 {
-        color: #0f172a; /* brand-dark */
+        color: #0f172a;
+        /* brand-dark */
         font-size: 1.5rem;
         font-weight: 700;
         margin: 0 0 0.5rem 0;
@@ -76,7 +88,8 @@
     /* Interactive Star Rating UI */
     .star-rating {
         display: flex;
-        flex-direction: row-reverse; /* Allows pure CSS hover highlighting */
+        flex-direction: row-reverse;
+        /* Allows pure CSS hover highlighting */
         justify-content: center;
         gap: 0.5rem;
         margin: 1.5rem 0 2rem 0;
@@ -88,15 +101,16 @@
 
     .star-rating label {
         font-size: 2.5rem;
-        color: #e2e8f0; 
+        color: #e2e8f0;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
     }
 
     .star-rating label:hover,
-    .star-rating label:hover ~ label,
-    .star-rating input:checked ~ label {
-        color: #f59e0b; /* Professional Amber Gold */
+    .star-rating label:hover~label,
+    .star-rating input:checked~label {
+        color: #f59e0b;
+        /* Professional Amber Gold */
     }
 
     .star-rating label:hover {
@@ -121,7 +135,8 @@
         width: 100%;
         height: 100px;
         padding: 1rem;
-        border-radius: 12px; /* Matches rounded-xl */
+        border-radius: 12px;
+        /* Matches rounded-xl */
         border: 1px solid #e2e8f0;
         background-color: #f8fafc;
         font-family: inherit;
@@ -134,7 +149,8 @@
 
     textarea:focus {
         outline: none;
-        border-color: #64d994; /* brand-action */
+        border-color: #64d994;
+        /* brand-action */
         background-color: #ffffff;
         box-shadow: 0 0 0 3px #64d994;
     }
@@ -147,10 +163,12 @@
     button {
         width: 100%;
         padding: 0.875rem 1.5rem;
-        background-color: #7be4a5; /* brand-action */
+        background-color: #7be4a5;
+        /* brand-action */
         color: #ffffff;
         border: none;
-        border-radius: 12px; /* Matches rounded-xl */
+        border-radius: 12px;
+        /* Matches rounded-xl */
         font-size: 1rem;
         font-weight: 700;
         cursor: pointer;
@@ -159,7 +177,8 @@
     }
 
     button:hover {
-        background-color: #64d994; /* Darker hover state */
+        background-color: #64d994;
+        /* Darker hover state */
         transform: translateY(-2px);
         box-shadow: 0 6px 10px -1px #64d994;
     }
@@ -174,7 +193,7 @@
 {% block content %}
 <div class="complete-wrapper">
     <div class="container">
-        
+
         <div class="success-icon">✓</div>
 
         <h1>Service Completed</h1>
@@ -185,28 +204,45 @@
             {% csrf_token %}
 
             <div class="star-rating">
-                <input type="radio" id="star5" name="rating" value="5" required />
+                <input type="radio" id="star5" name="rating" value="5" />
                 <label for="star5" title="5 stars">★</label>
-                
+
                 <input type="radio" id="star4" name="rating" value="4" />
                 <label for="star4" title="4 stars">★</label>
-                
+
                 <input type="radio" id="star3" name="rating" value="3" />
                 <label for="star3" title="3 stars">★</label>
-                
+
                 <input type="radio" id="star2" name="rating" value="2" />
                 <label for="star2" title="2 stars">★</label>
-                
+
                 <input type="radio" id="star1" name="rating" value="1" />
                 <label for="star1" title="1 star">★</label>
             </div>
 
             <div class="form-group">
                 <label for="feedback">Leave a review</label>
-                <textarea id="feedback" name="feedback" placeholder="Tell us what you loved about the service..." required></textarea>
+                <textarea id="feedback" name="feedback"
+                    placeholder="Tell us what you loved about the service..."></textarea>
             </div>
 
-            <button type="submit">Submit Feedback</button>
+            <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+                <button type="submit">Submit Feedback</button>
+
+                <button type="submit" style="
+        width: 100%;
+        text-align: center;
+        padding: 0.875rem 1.5rem;
+        background-color: #e2e8f0;
+        color: #334155;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+       " onmouseover="this.style.backgroundColor='#cbd5f5'" onmouseout="this.style.backgroundColor='#e2e8f0'">
+                    Cancel
+                    </a>
+            </div>
         </form>
 
     </div>
