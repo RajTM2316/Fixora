@@ -180,6 +180,7 @@ def service_view(request):
 # =========================
 # CREATE SERVICE REQUEST
 # =========================
+
 @login_required
 @transaction.atomic
 def create_request(request):
@@ -188,12 +189,13 @@ def create_request(request):
     if profile.role != "customer":
         return redirect("manage_service:customer_home")
 
-    if ServiceRequest.objects.filter(
-        customer=profile,
-        status__in=["PENDING", "ACCEPTED"]
-    ).exists():
-        messages.error(request, "You already have an active booking.")
-        return redirect("manage_service:my_bookings")
+    # prevent multiple active bookings
+    # if ServiceRequest.objects.filter(
+    #     customer=profile,
+    #     status__in=["PENDING", "ACCEPTED"]
+    # ).exists():
+    #     messages.error(request, "You already have an active booking.")
+    #     return redirect("manage_service:my_bookings")
 
     categories = Category.objects.filter(is_active=True)
 
@@ -206,30 +208,31 @@ def create_request(request):
             messages.error(request, "Please fill all required fields.")
             return redirect("manage_service:create_request")
 
-        provider_service = ProviderService.objects.filter(
+        provider_services = ProviderService.objects.filter(
             service__category_id=category_id,
             is_available=True
-        ).select_related("provider", "service").first()
+        ).select_related("provider", "service")
 
-        if not provider_service:
+        if not provider_services.exists():
             messages.error(request, "No providers available right now.")
             return redirect("manage_service:create_request")
 
-        service_request = ServiceRequest.objects.create(
-            customer=profile,
-            provider_service=provider_service,
-            address_text=address,
-            problem_description=description,
-            status="PENDING"
-        )
-
-        for img in request.FILES.getlist("images"):
-            ServiceRequestImage.objects.create(
-                request=service_request,
-                image=img
+        for ps in provider_services:
+            service_request = ServiceRequest.objects.create(
+                customer=profile,
+                provider_service=ps,
+                address_text=address,
+                problem_description=description,
+                status="PENDING"
             )
 
-        messages.success(request, "Service request created successfully.")
+            for img in request.FILES.getlist("images"):
+                ServiceRequestImage.objects.create(
+                    request=service_request,
+                    image=img
+                )
+
+        messages.success(request, "Request sent to all providers.")
         return redirect("manage_service:my_bookings")
 
     return render(request, "services/create_service_request.html", {
@@ -254,12 +257,13 @@ def book_service(request, ps_id):
         is_available=True
     )
 
-    if ServiceRequest.objects.filter(
-        customer=profile,
-        status__in=["PENDING", "ACCEPTED"]
-    ).exists():
-        messages.error(request, "You already have an active booking.")
-        return redirect("manage_service:my_bookings")
+    #Prevent multiple booking
+    # if ServiceRequest.objects.filter(
+    #     customer=profile,
+    #     status__in=["PENDING", "ACCEPTED"]
+    # ).exists():
+    #     messages.error(request, "You already have an active booking.")
+    #     return redirect("manage_service:my_bookings")
 
     if request.method == "POST":
         address = request.POST.get("address")
@@ -315,43 +319,57 @@ def booking_detail(request, booking_id):
 # =========================
 # PROVIDER ACTIONS
 # =========================
+
 @login_required
+@transaction.atomic
 def accept_request(request, request_id):
     profile = get_object_or_404(Profile, user=request.user)
 
     if profile.role != "provider":
         return HttpResponseForbidden("Access denied.")
 
-    if ServiceRequest.objects.filter(
-        provider_service__provider=profile,
-        status="ACCEPTED"
-    ).exists():
-        messages.error(request, "You already have an active job.")
-        return redirect("manage_service:provider_dashboard")
-
-    service_request = ServiceRequest.objects.filter(
+    
+    service_request = ServiceRequest.objects.select_for_update().filter(
         id=request_id,
         provider_service__provider=profile,
         status="PENDING"
     ).first()
 
     if not service_request:
-        messages.error(request, "Invalid request.")
+        messages.error(request, "Invalid or already handled request.")
         return redirect("manage_service:provider_dashboard")
-    
-    lat=request.GET.get("latitude")
-    lng=request.GET.get("longitude")
 
-    print("Provider Lat:", lat)
-    print("Provider Lng:", lng)
+    
+    already_taken = ServiceRequest.objects.filter(
+        customer=service_request.customer,
+        status="ACCEPTED"
+    ).exists()
+
+    if already_taken:
+        service_request.status = "REJECTED"
+        service_request.save()
+
+        messages.error(request, "Already accepted by another provider.")
+        return redirect("manage_service:provider_dashboard")
+
+    
+    service_request.status = "ACCEPTED"
+    service_request.save()
+
+    
+    ServiceRequest.objects.filter(
+        customer=service_request.customer,
+        status="PENDING"
+    ).exclude(id=service_request.id).update(status="REJECTED")
+
+    
+    lat = request.GET.get("latitude")
+    lng = request.GET.get("longitude")
 
     if lat and lng:
         profile.latitude = lat
         profile.longitude = lng
         profile.save()
-
-    service_request.status = "ACCEPTED"
-    service_request.save()
 
     messages.success(request, "Request accepted successfully.")
     return redirect("manage_service:provider_dashboard")
