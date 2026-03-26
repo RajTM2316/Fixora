@@ -1,3 +1,5 @@
+import profile
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
@@ -87,20 +89,15 @@ def customer_home(request):
 # =========================
 # MY BOOKINGS
 # =========================
+# =========================
+# MY BOOKINGS
+# =========================
 @login_required
 def my_bookings(request):
     profile = get_object_or_404(Profile, user=request.user)
 
     if profile.role != "customer":
         return HttpResponseForbidden("Access denied.")
-    pending_payment = ServiceRequest.objects.filter(
-        customer=profile,
-        status="COMPLETED",
-        payment_done=False
-    ).first()
-
-    if pending_payment:
-        return redirect("manage_service:complete_service", request_id=pending_payment.id)
 
     bookings = ServiceRequest.objects.filter(
         customer=profile
@@ -121,32 +118,46 @@ from django.contrib import messages
 
 @login_required
 def complete_service(request, request_id):
-
     profile = get_object_or_404(Profile, user=request.user)
-
-    service = get_object_or_404(
+    service_request = get_object_or_404(
         ServiceRequest,
         id=request_id,
-        customer=profile
+        customer=profile,
+        status='COMPLETED',
+        payment_done=True       # only reachable AFTER payment
     )
 
+    if service_request.feedback_given:
+        return redirect("manage_service:customer_home")
+
     if request.method == "POST":
-
-        feedback = request.POST.get("feedback")
+        from manage_service.models import Feedback
         rating = request.POST.get("rating")
+        comment = request.POST.get("feedback")
 
-        service.feedback_given = True
-        #temporary payment logic
-        service.payment_done = True
-        service.status = "COMPLETED"
-        service.save()
+        if rating and comment:
+            Feedback.objects.create(
+                service_request=service_request,
+                customer=profile,
+                provider=service_request.provider_service.provider,
+                rating=int(rating),
+                comment=comment
+            )
 
-        messages.success(request, "Feedback submitted!")
+            # Update provider average rating
+            provider_profile = service_request.provider_service.provider
+            provider_profile.total_reviews += 1
+            all_feedbacks = Feedback.objects.filter(provider=provider_profile)
+            provider_profile.average_rating = sum(f.rating for f in all_feedbacks) / provider_profile.total_reviews
+            provider_profile.save()
 
-        return redirect("manage_service:my_bookings")
+            service_request.feedback_given = True
+            service_request.save()
+
+        return redirect("manage_service:customer_home")
 
     return render(request, "customer/complete_service.html", {
-        "service": service
+        "service": service_request
     })
 
 
