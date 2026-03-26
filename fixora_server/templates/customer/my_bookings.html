@@ -40,10 +40,18 @@
                         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase
                             {% if booking.status == 'PENDING' %}bg-blue-100 text-blue-700
                             {% elif booking.status == 'ACCEPTED' %}bg-green-100 text-green-700
-                            {% elif booking.status == 'COMPLETED' %}bg-gray-100 text-gray-700
+                            {% elif booking.status == 'COMPLETED' and not booking.payment_done %}bg-yellow-100 text-yellow-700
+                            {% elif booking.status == 'COMPLETED' and booking.payment_done and not booking.feedback_given %}bg-purple-100 text-purple-700
+                            {% elif booking.status == 'COMPLETED' and booking.feedback_given %}bg-gray-100 text-gray-500
                             {% elif booking.status == 'REJECTED' %}bg-red-100 text-red-700
                             {% endif %}">
-                            {{ booking.status }}
+                            {% if booking.status == 'PENDING' %}Waiting
+                            {% elif booking.status == 'ACCEPTED' %}In Progress
+                            {% elif booking.status == 'COMPLETED' and not booking.payment_done %}Payment Pending
+                            {% elif booking.status == 'COMPLETED' and booking.payment_done and not booking.feedback_given %}Feedback Pending
+                            {% elif booking.status == 'COMPLETED' and booking.feedback_given %}Done
+                            {% elif booking.status == 'REJECTED' %}Rejected
+                            {% endif %}
                         </span>
 
                         <span class="text-gray-400 text-xs font-bold">
@@ -66,20 +74,66 @@
                 </div>
 
                 <!-- ACTIONS -->
-                <div class="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
+                <div class="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0 items-center">
 
-                    {% if booking.status == 'ACCEPTED' %}
+                    {% if booking.status == 'PENDING' %}
+                    <!-- Waiting for provider to accept -->
+                    <span class="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 text-blue-600 font-semibold text-sm border border-blue-200">
+                        <svg class="animate-spin h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                        </svg>
+                        Waiting for Provider...
+                    </span>
+
+                    {% elif booking.status == 'ACCEPTED' %}
+                    <!-- In Progress -->
+                    <span class="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-50 text-green-700 font-semibold text-sm border border-green-200">
+                        <svg class="h-4 w-4 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        In Progress
+                    </span>
                     <a href="{% url 'chat:direct_chat' booking.id %}"
                        class="bg-white text-brand-dark border border-gray-200 px-6 py-3 rounded-xl font-semibold hover:border-brand-action transition text-center">
                         Chat
                     </a>
+
+                    {% elif booking.status == 'COMPLETED' and not booking.payment_done %}
+                    <!-- Pay Now -->
+                    <a href="{% url 'create_payment' request_id=booking.id %}"
+                       class="flex items-center gap-2 bg-yellow-400 text-white px-6 py-3 rounded-xl font-bold hover:bg-yellow-500 transition text-center">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        Pay Now — ₹{{ booking.provider_service.service.base_price }}
+                    </a>
+
+                    {% elif booking.status == 'COMPLETED' and booking.payment_done and not booking.feedback_given %}
+                    <!-- Give Feedback -->
+                    <a href="{% url 'manage_service:complete_service' request_id=booking.id %}"
+                       class="flex items-center gap-2 bg-brand-action text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-dark transition text-center">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                        Give Feedback
+                    </a>
+
+                    {% elif booking.status == 'COMPLETED' and booking.feedback_given %}
+                    <!-- Done -->
+                    <span class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 text-gray-500 font-semibold text-sm border border-gray-200">
+                        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Completed
+                    </span>
+
                     {% endif %}
 
                     <a href="{% url 'manage_service:booking_detail' booking.id %}"
                        class="bg-brand-action text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-dark transition text-center">
                         View Details
                     </a>
-
                 </div>
             </div>
             {% endfor %}
