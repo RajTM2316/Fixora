@@ -140,27 +140,39 @@
 <body>
 
 
-<div class="chat-container">
-    <div class="chat-header">
-        <h2>Request #{{ service_request.id }}</h2>
-        <div id="status">Offline</div>
-    </div>
+    <div class="chat-container">
 
-
-    <div id="chat-box"></div>
-
-
-    <div class="input-area">
-        <input type="file" id="file-input" style="display:none">
-        <button class="btn attach-btn" onclick="document.getElementById('file-input').click()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        </button>
-        <input id="message-input" type="text" placeholder="Message..." autocomplete="off">
-        <button class="btn send-btn" onclick="sendMessage()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-        </button>
-    </div>
-</div>
+        <div class="chat-header">
+            <div>
+                {% if other_user %}
+                <h2>{{ other_user.username }}</h2>
+                <span style="font-size:0.7rem; color:var(--accent-secondary); font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">
+                    {{ other_role }}
+                </span>
+                {% else %}
+                <h2>Waiting for provider...</h2>
+                <span style="font-size:0.7rem; color:var(--text-dim); font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">
+                    No provider assigned yet
+                </span>
+                {% endif %}
+            </div>
+            <div id="status">Offline</div>
+        </div>
+    
+        <div id="chat-box"></div>
+    
+        <div class="input-area">
+            <input type="file" id="file-input" style="display:none">
+            <button class="btn attach-btn" onclick="document.getElementById('file-input').click()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <input id="message-input" type="text" placeholder="Message..." autocomplete="off">
+            <button class="btn send-btn" onclick="sendMessage()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    
+    </div> 
 
 
 <script>
