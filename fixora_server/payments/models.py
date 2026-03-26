@@ -1,9 +1,16 @@
 from django.db import models
 
+from manage_service.models import ServiceRequest
+
 class Payment(models.Model):
-
+    service_request = models.OneToOneField(
+        'manage_service.ServiceRequest',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='payment'
+    )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-
     description = models.CharField(max_length=255)
 
     razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
